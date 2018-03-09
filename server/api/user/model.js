@@ -19,13 +19,30 @@ const UserSchema = new mongoose.Schema({
 
   // Here`account` is for public information
   account: {
-    first_name: String,
+    first_name: {
+      type: String,
+      required: true
+    },
     last_name: String,
     gender: {
       type: String,
       enum: ["Male", "Female"]
     },
-    description: String
+    sessions: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Session"
+      }
+    ],
+    role: {
+      type: String,
+      enum: ["user", "teacher"]
+    },
+    paidUntil: {
+      type: Date,
+      required: true,
+      default: "01/01/1980"
+    }
   }
 })
 
