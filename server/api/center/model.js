@@ -1,5 +1,4 @@
 const mongoose = require("mongoose")
-const uniqueValidator = require("mongoose-unique-validator")
 
 const schema = new mongoose.Schema({
   name: {
@@ -20,7 +19,5 @@ const schema = new mongoose.Schema({
     required: [true, "center is required"]
   }
 })
-
-schema.plugin(uniqueValidator, { message: "{PATH}, should be unique" })
 
 module.exports = mongoose.model("Center", schema)
