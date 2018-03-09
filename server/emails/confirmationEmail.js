@@ -1,8 +1,8 @@
 function confirmEmail(url, user) {
   return {
-    from: "<contact@great-api.mailgun.org>",
+    from: '<contact@great-api.mailgun.org>',
     to: user.email,
-    subject: "Welcome to our API - Email confirmation",
+    subject: 'Welcome to our API - Email confirmation',
     html: `
     <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
@@ -332,7 +332,7 @@ xmlns:o="urn:schemas-microsoft-com:office:office">
                                                     <td style="word-wrap:break-word;font-size:0px;padding:0px;" align="left">
                                                       <div style="cursor:auto;color:#5d7079;font-family:TW-Averta-Regular, Averta, Helvetica, Arial;font-size:16px;line-height:24px;letter-spacing:0.4px;text-align:left;">
                                                         <p>Hello, ${user.account
-                                                          .name || ""}</p>
+                                                          .name || ''}</p>
                                                         <p class="hero">It’s time to confirm your email address.</p>
                                                         <p>Have we got the right email address to reach you on? To confirm that you can get
                                                           our emails, just click the button below.</p>
@@ -382,7 +382,7 @@ xmlns:o="urn:schemas-microsoft-com:office:office">
   </body>
 
 </html>`
-  };
+  }
 }
 
-module.exports = confirmEmail;
+module.exports = confirmEmail

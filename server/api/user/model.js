@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
   },
   password: String,
   token: String,
-  // Le token permettra d'authentifier l'utilisateur à l'aide du package `passport-http-bearer`
+  // Token ables to authentify with `passport-http-bearer`
   // Here`account` is for public information
   account: {
     firstName: {
@@ -55,6 +55,7 @@ UserSchema.plugin(passportLocalMongoose, {
 
 // Find a user with `email` and `password`
 UserSchema.statics.authenticateLocal = function() {
+<<<<<<< HEAD
   const _self = this
   return (req, email, password, cb) => {
     _self.findByUsername(email, true, (err, user) => {
@@ -63,18 +64,38 @@ UserSchema.statics.authenticateLocal = function() {
         return user.authenticate(password, cb)
       }
       return cb(null, false)
+=======
+  var _self = this
+  return function(req, email, password, cb) {
+    _self.findByUsername(email, true, function(err, user) {
+      if (err) return cb(err)
+      if (user) {
+        return user.authenticate(password, cb)
+      } else {
+        return cb(null, false)
+      }
+>>>>>>> 93c2e17d24fa64c94f86af76f55d80329d2193e0
     })
   }
 }
 
 // Used with `passport-http-bearer` finds user with `token`
 UserSchema.statics.authenticateBearer = function() {
+<<<<<<< HEAD
   const _self = this
   return (token, cb) => {
     if (!token) {
       cb(null, false)
     } else {
       _self.findOne({ token }, (err, user) => {
+=======
+  var _self = this
+  return function(token, cb) {
+    if (!token) {
+      cb(null, false)
+    } else {
+      _self.findOne({ token: token }, function(err, user) {
+>>>>>>> 93c2e17d24fa64c94f86af76f55d80329d2193e0
         if (err) return cb(err)
         if (!user) return cb(null, false)
         return cb(null, user)

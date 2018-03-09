@@ -1,8 +1,8 @@
 function forgetPasswordEmail(url, user) {
   return {
-    from: "<contact@great-api.mailgun.org>",
+    from: '<contact@great-api.mailgun.org>',
     to: user.email,
-    subject: "Forgotten Password",
+    subject: 'Forgotten Password',
     html: `
     <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
@@ -330,7 +330,7 @@ xmlns:o="urn:schemas-microsoft-com:office:office">
                                                     <td style="word-wrap:break-word;font-size:0px;padding:0px;" align="left">
                                                       <div style="cursor:auto;color:#5d7079;font-family:TW-Averta-Regular, Averta, Helvetica, Arial;font-size:16px;line-height:24px;letter-spacing:0.4px;text-align:left;">
                                                         <p>Hello, ${user.account
-                                                          .name || ""}</p>
+                                                          .name || ''}</p>
                                                         <p class="hero">You forgot you password ?</p>
                                                         <p>Click on the button below to create a new password</p>
                                                         <p>
@@ -379,7 +379,7 @@ xmlns:o="urn:schemas-microsoft-com:office:office">
   </body>
 
 </html>`
-  };
+  }
 }
 
-module.exports = forgetPasswordEmail;
+module.exports = forgetPasswordEmail
