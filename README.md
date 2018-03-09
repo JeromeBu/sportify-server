@@ -1,4 +1,4 @@
-# API-template
+# Sportify
 
 npm install <!-- install packages -->
 
