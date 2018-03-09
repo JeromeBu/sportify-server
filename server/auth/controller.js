@@ -10,18 +10,17 @@ const confirmEmail = require('../emails/confirmationEmail')
 const forgetPasswordEmail = require('../emails/forgetPasswordEmail')
 
 exports.sign_up = function(req, res) {
-	const { email, firstName, lastName, role, gender } = req.body
+	const { email, firstName, lastName, role, gender, password } = req.body
 
 	User.register(
 		new User({
-			email: req.body.email,
+			email: email,
 			token: uid2(32), // Token created with uid2. Will be used for Bear strategy. Should be regenerated when password is changed.
 			emailCheck: {
 				token: uid2(20),
 				createdAt: new Date()
 			},
 			account: {
-				email,
 				firstName,
 				lastName,
 				role,
