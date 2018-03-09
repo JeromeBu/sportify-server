@@ -8,8 +8,7 @@
 		"dev": "nodemon index.js",
 		"seed": "node data/seed.js",
 		"test": "NODE_ENV=test mocha --recursive **/**.spec.js",
-		"testCover":
-			"NODE_ENV=test nyc --reporter=html --reporter=text mocha --recursive **/**.spec.js"
+		"testCover": "NODE_ENV=test nyc --reporter=html --reporter=text mocha --recursive **/**.spec.js"
 	},
 	"author": "TheBestTeamEver",
 	"license": "ISC",
@@ -23,6 +22,7 @@
 		"mailgun-js": "^0.16.0",
 		"mongoose": "^5.0.6",
 		"mongoose-simple-random": "^0.4.1",
+		"mongoose-unique-validator": "^2.0.0",
 		"morgan": "^1.9.0",
 		"passport": "^0.4.0",
 		"passport-http-bearer": "^1.0.1",
