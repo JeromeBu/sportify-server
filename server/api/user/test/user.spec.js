@@ -1,36 +1,34 @@
 let server = require('../../../../index')
+const User = require('../../user/model')
+const factory = require('../../../utils/modelFactory')
 
-var User = require('../../user/model')
-var factory = require('../../../utils/modelFactory')
+const chai = require('chai')
+const should = require('chai').should()
+const chaiHttp = require('chai-http')
 
-var chai = require('chai')
-var expect = require('chai').expect
-var should = require('chai').should()
-var chaiHttp = require('chai-http')
 chai.use(chaiHttp)
 
-describe('GET testing secured route users/:id', function() {
-	beforeEach(done => {
-		User.remove({}, err => {
-			done()
-		})
-	})
-	// it("Check autentification before giving access", function(done) {
-	//   factory.user({}, function(user) {
-	//     chai
-	//       .request(server)
-	//       .get(`/api/users/${user._id}`)
-	//       .set("Authorization", `Bearer ${user.token}`)
-	//       .set("Content-Type", "application/json")
-	//       .end(function(err, res) {
-	//         // console.log(err)
-	//         should.not.exist(err)
-	//         res.should.have.status(200)
-	//         res.should.be.a("object")
-	//         res.body.should.have.property("account")
-	//         res.body.account.should.have.property("description")
-	//         done()
-	//       })
-	//   })
-	// })
+describe('GET testing secured route users/:id', () => {
+  beforeEach(done => {
+    User.remove({}, err => {
+      done()
+    })
+  })
+  it('Check autentification before giving access', done => {
+    factory.user({}, user => {
+      chai
+        .request(server)
+        .get(`/api/users/${user.id}`)
+        .set('Authorization', `Bearer ${user.token}`)
+        .set('Content-Type', 'application/json')
+        .end((err, res) => {
+          should.not.exist(err)
+          res.should.have.status(200)
+          res.should.be.a('object')
+          res.body.should.have.property('account')
+          res.body.account.should.have.property('firstName')
+          done()
+        })
+    })
+  })
 })
