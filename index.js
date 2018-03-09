@@ -1,5 +1,5 @@
-const app = require("./server/server").app;
-const config = require("./config");
+const app = require('./server/server').app
+const config = require('./config')
 
 const server = app.listen(config.PORT, function() {
   console.log(
@@ -8,7 +8,7 @@ const server = app.listen(config.PORT, function() {
     } | ${config.ENV.toUpperCase()} environement | MONGO_URI: ${
       config.MONGODB_URI
     } \n`
-  );
-});
+  )
+})
 
-module.exports = server; // for testing
+module.exports = server // for testing
