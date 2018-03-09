@@ -11,7 +11,6 @@ const forgetPasswordEmail = require('../emails/forgetPasswordEmail')
 
 exports.sign_up = (req, res) => {
   const { email, firstName, lastName, role, gender, password } = req.body
-
   User.register(
     new User({
       email,
@@ -30,9 +29,8 @@ exports.sign_up = (req, res) => {
     password, // password has to be the second parameter transmitted
     (err, user) => {
       if (err) {
-        if (config.ENV !== 'test') console.error(err)
-        // TODO test
-        return res.status(400).json({ error: err.message })
+        res.status(503)
+        return res.json({ error: err.message })
       }
       // sending mails only in production ENV
       if (config.ENV === 'production') {
@@ -95,14 +93,9 @@ exports.forgotten_password = (req, res, next) => {
       valid: true
     }
     return user.save(error => {
-      if (error) {
-        console.log(
-          'Error when saving user with passwordChange infos : ',
-          error
-        )
-        return res
-          .status(400)
-          .json({ error: 'Error when setting recovering infos in user ' })
+      if (err) {
+        res.status(503)
+        return next(err.message)
       }
       if (config.ENV === 'production') {
         const url = req.headers.host
@@ -118,11 +111,14 @@ exports.forgotten_password = (req, res, next) => {
   })
 }
 
-exports.email_check = (req, res) => {
+exports.email_check = (req, res, next) => {
   const { email, token } = req.query
   if (!token) return res.status(400).send('No token specified')
   return User.findOne({ 'emailCheck.token': token, email }, (err, user) => {
-    if (err) return res.status(400).send(err)
+    if (err) {
+      res.status(503)
+      return next(err.message)
+    }
     if (!user) return res.status(400).send('Wrong credentials')
     if (user.emailCheck.valid)
       return res
@@ -137,7 +133,10 @@ exports.email_check = (req, res) => {
       })
     user.emailCheck.valid = true
     return user.save(error => {
-      if (error) return res.send(error)
+      if (error) {
+        res.status(503)
+        return next(error.message)
+      }
       return res.json({ message: 'Your email has been verified with success' })
     })
   })
@@ -160,7 +159,7 @@ exports.reset_password_POST = (req, res, next) => {
     user.passwordChange.valid = false
     user.save(error => {
       if (error) {
-        res.status(500)
+        res.status(503)
         return next(error.message)
       }
       return res.status(200).json({ message: 'Password reset successfully' })

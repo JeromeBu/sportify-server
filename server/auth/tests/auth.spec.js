@@ -38,7 +38,7 @@ describe('Authentication and password recovery', () => {
           .send(user)
           .end((err, res) => {
             // should.not.exist(err);
-            res.should.have.status(400)
+            res.should.have.status(503)
             res.body.should.be.a('object')
             res.body.should.have.property('error')
             res.body.error.should.include('No password was given')
@@ -57,7 +57,7 @@ describe('Authentication and password recovery', () => {
           .send(user)
           .end((err, res) => {
             // should.not.exist(err);
-            res.should.have.status(400)
+            res.should.have.status(503)
             res.body.should.be.a('object')
             res.body.should.have.property('error')
             res.body.error.should.include('No username was given') // TODO: change username with email
@@ -82,7 +82,7 @@ describe('Authentication and password recovery', () => {
               .send(newUser)
               .end((err, res) => {
                 // should.not.exist(err);
-                res.should.have.status(400)
+                res.should.have.status(503)
                 res.body.should.be.a('object')
                 res.body.should.have.property('error')
                 res.body.error.should.include('username is already registered')

@@ -19,4 +19,17 @@ describe('Home', () => {
         })
     })
   })
+  describe('GET /grrr', () => {
+    it('responds 404 not found', done => {
+      chai
+        .request(server)
+        .get('/grrr')
+        .end((err, res) => {
+          res.should.have.status(404)
+          res.should.be.a('object')
+          res.body.should.have.property('error').that.include('Not Found')
+          done()
+        })
+    })
+  })
 })
