@@ -1,7 +1,7 @@
-var mongoose = require("mongoose")
-var passportLocalMongoose = require("passport-local-mongoose")
+const mongoose = require("mongoose")
+const passportLocalMongoose = require("passport-local-mongoose")
 
-var UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   shortId: Number, // shortId is useful when seeding data, it facilitates associations
   email: String,
   emailCheck: {
