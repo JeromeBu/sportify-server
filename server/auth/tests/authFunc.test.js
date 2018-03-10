@@ -11,8 +11,7 @@ function createTestUsers(options) {
   return async () => {
     const initialPassword = 'old_password'
     try {
-      await User.remove({}, err => {})
-
+      await User.remove({})
       validEmailUser = await factory.user({
         email: 'validEmail@mail.com',
         emailCheckValid: true,

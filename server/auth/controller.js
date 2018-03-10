@@ -29,7 +29,7 @@ exports.sign_up = (req, res) => {
     password, // password has to be the second parameter transmitted
     (err, user) => {
       if (err) {
-        res.status(503)
+        res.status(400)
         return res.json({ error: err.message })
       }
       // sending mails only in production ENV
@@ -53,7 +53,8 @@ exports.sign_up = (req, res) => {
 }
 
 exports.log_in = (req, res, next) => {
-  passport.authenticate('local', { session: false }, (err, user, info) => {
+  passport.authenticate('local', { session: false }, (err, user) => {
+    // info parameter available to
     if (err) {
       res.status(400)
       return next(err.message)
@@ -93,9 +94,9 @@ exports.forgotten_password = (req, res, next) => {
       valid: true
     }
     return user.save(error => {
-      if (err) {
+      if (error) {
         res.status(503)
-        return next(err.message)
+        return next(error.message)
       }
       if (config.ENV === 'production') {
         const url = req.headers.host

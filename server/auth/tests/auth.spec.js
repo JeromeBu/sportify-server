@@ -21,7 +21,7 @@ chai.use(chaiHttp)
 describe('Authentication and password recovery', () => {
   describe('Authentication', () => {
     beforeEach(done => {
-      User.remove({}, err => {
+      User.remove({}, () => {
         done()
       })
     })
@@ -38,7 +38,7 @@ describe('Authentication and password recovery', () => {
           .send(user)
           .end((err, res) => {
             // should.not.exist(err);
-            res.should.have.status(503)
+            res.should.have.status(400)
             res.body.should.be.a('object')
             res.body.should.have.property('error')
             res.body.error.should.include('No password was given')
@@ -57,7 +57,7 @@ describe('Authentication and password recovery', () => {
           .send(user)
           .end((err, res) => {
             // should.not.exist(err);
-            res.should.have.status(503)
+            res.should.have.status(400)
             res.body.should.be.a('object')
             res.body.should.have.property('error')
             res.body.error.should.include('No username was given') // TODO: change username with email
@@ -82,7 +82,7 @@ describe('Authentication and password recovery', () => {
               .send(newUser)
               .end((err, res) => {
                 // should.not.exist(err);
-                res.should.have.status(503)
+                res.should.have.status(400)
                 res.body.should.be.a('object')
                 res.body.should.have.property('error')
                 res.body.error.should.include('username is already registered')
@@ -263,7 +263,7 @@ describe('Authentication and password recovery', () => {
   describe('Recovery of password', () => {
     describe('POST /auth/forgotten_password', () => {
       beforeEach(done => {
-        User.remove({}, err => {
+        User.remove({}, () => {
           done()
         })
       })

@@ -1,4 +1,4 @@
-let server = require('../../../../index')
+const server = require('../../../../index')
 const User = require('../../user/model')
 const factory = require('../../../utils/modelFactory')
 
@@ -10,7 +10,7 @@ chai.use(chaiHttp)
 
 describe('GET testing secured route users/:id', () => {
   beforeEach(done => {
-    User.remove({}, err => {
+    User.remove({}, () => {
       done()
     })
   })
