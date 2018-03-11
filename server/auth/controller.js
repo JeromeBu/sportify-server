@@ -78,7 +78,7 @@ exports.forgotten_password = (req, res, next) => {
   if (!email) return res.status(400).json({ error: 'No email specified' })
   return User.findOne({ email }, (err, user) => {
     if (err) {
-      res.status(400)
+      res.status(503)
       return next(err.message)
     }
     if (!user) {
@@ -129,7 +129,7 @@ exports.email_check = (req, res, next) => {
     yesterday.setDate(yesterday.getDate() - 1)
     if (user.emailCheck.createdAt < yesterday)
       return res.status(400).json({
-        message:
+        error:
           'This link is outdated (older than 24h), please try to sign up again'
       })
     user.emailCheck.valid = true

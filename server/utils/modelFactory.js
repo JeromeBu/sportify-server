@@ -9,17 +9,18 @@ function createUser(options, callback) {
       email: options.email || 'emailCheck@testing.com',
       token: options.token || uid(32),
       emailCheck: {
-        valid: options.emailCheckValid === false ? false : true,
+        valid: !(options.emailCheckValid === false),
         token: options.emailCheckToken || uid(20),
         createdAt: options.emailCheckCreatedAt || new Date()
       },
       passwordChange: {
-        valid: options.passwordChangeValid === false ? false : true,
+        valid: !(options.passwordChangeValid === false),
         token: options.passwordChangeToken || uid(20),
         createdAt: options.passwordChangeCreatedAt || new Date()
       },
       account: {
-        firstName: options.firstName || 'Testing emailCheck'
+        firstName: options.firstName || 'My first name',
+        lastName: options.firstName || 'My last name'
       }
     })
     User.register(newUser, password, (err, user) => {

@@ -3,7 +3,17 @@ const passportLocalMongoose = require('passport-local-mongoose')
 
 const UserSchema = new mongoose.Schema({
   shortId: Number, // shortId is useful when seeding data, it facilitates associations
-  email: String,
+  email: {
+    type: String,
+    validate: {
+      validator: str =>
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+          str.toLowerCase()
+        ),
+      message: '{VALUE} is not a valid email address'
+    },
+    required: [true, 'User phone number required']
+  },
   emailCheck: {
     valid: { type: Boolean, default: false },
     token: String,

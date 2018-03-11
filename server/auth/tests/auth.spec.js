@@ -56,11 +56,45 @@ describe('Authentication and password recovery', () => {
           .post('/auth/sign_up')
           .send(user)
           .end((err, res) => {
-            // should.not.exist(err);
             res.should.have.status(400)
             res.body.should.be.a('object')
             res.body.should.have.property('error')
-            res.body.error.should.include('No username was given') // TODO: change username with email
+            res.body.error.should.include('No username was given')
+            done()
+          })
+      })
+      it('Not POST a user without firstName field', done => {
+        const newUser = {
+          email: 'noFirstName@mail.com',
+          password: 'password'
+        }
+        chai
+          .request(server)
+          .post('/auth/sign_up')
+          .send(newUser)
+          .end((err, res) => {
+            res.should.have.status(400)
+            res.body.should.be.a('object')
+            res.body.should.have.property('error')
+            res.body.error.should.include('`account.firstName` is required')
+            done()
+          })
+      })
+      it("Not POST a user if email doesn't have a correct format", done => {
+        const newUser = {
+          firstName: 'First name : wrongEmailFormat',
+          email: 'wrongFormatEmail',
+          password: 'password'
+        }
+        chai
+          .request(server)
+          .post('/auth/sign_up')
+          .send(newUser)
+          .end((err, res) => {
+            res.should.have.status(400)
+            res.body.should.be.a('object')
+            res.body.should.have.property('error')
+            res.body.error.should.include('is not a valid email address')
             done()
           })
       })
@@ -73,6 +107,7 @@ describe('Authentication and password recovery', () => {
           })
           .then(validUser => {
             const newUser = {
+              firstName: 'The First Name',
               email: validUser.email,
               password: 'password'
             }
@@ -196,26 +231,6 @@ describe('Authentication and password recovery', () => {
     })
 
     describe('GET /auth/email_check', () => {
-      it('Confirms email', done => {
-        factory.user({ emailCheckValid: false }, user => {
-          chai
-            .request(server)
-            .get(
-              `/auth/email_check?token=${user.emailCheck.token}&email=${
-                user.email
-              }`
-            )
-            .end((err, res) => {
-              should.not.exist(err)
-              res.should.have.status(200)
-              res.should.be.a('object')
-              res.body.should.have
-                .property('message')
-                .that.include('Your email has been verified with success')
-              done()
-            })
-        })
-      })
       it('Responds an error when called without token', done => {
         chai
           .request(server)
@@ -253,6 +268,50 @@ describe('Authentication and password recovery', () => {
               res.body.should.have
                 .property('message')
                 .that.include('You have already confirmed your email')
+              done()
+            })
+        })
+      })
+      it('Responds message when emailCheck link is outdated', done => {
+        const twoDaysAgo = new Date()
+        twoDaysAgo.setDate(twoDaysAgo.getDate() - 2)
+        factory.user(
+          { emailCheckValid: false, emailCheckCreatedAt: twoDaysAgo },
+          user => {
+            chai
+              .request(server)
+              .get(
+                `/auth/email_check?token=${user.emailCheck.token}&email=${
+                  user.email
+                }`
+              )
+              .end((err, res) => {
+                res.should.have.status(400)
+                res.should.be.a('object')
+                res.body.should.have
+                  .property('error')
+                  .that.include('link is outdated ')
+                done()
+              })
+          }
+        )
+      })
+      it('Confirms email', done => {
+        factory.user({ emailCheckValid: false }, user => {
+          chai
+            .request(server)
+            .get(
+              `/auth/email_check?token=${user.emailCheck.token}&email=${
+                user.email
+              }`
+            )
+            .end((err, res) => {
+              should.not.exist(err)
+              res.should.have.status(200)
+              res.should.be.a('object')
+              res.body.should.have
+                .property('message')
+                .that.include('Your email has been verified with success')
               done()
             })
         })

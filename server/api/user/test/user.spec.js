@@ -31,4 +31,49 @@ describe('GET testing secured route users/:id', () => {
         })
     })
   })
+  it("Raise an error if user Bearer doesn't match a user", done => {
+    factory.user({}).then(user => {
+      chai
+        .request(server)
+        .get(`/api/users/${user.id}`)
+        .set('Authorization', 'Bearer wrong_token')
+        .set('Content-Type', 'application/json')
+        .end((err, res) => {
+          res.should.have.status(401)
+          res.should.be.a('object')
+          res.body.should.have.property('error').that.include('Unauthorized')
+          done()
+        })
+    })
+  })
+  it('Raise an error if no user find with this id', done => {
+    factory.user({}).then(user => {
+      chai
+        .request(server)
+        .get('/api/users/5aa15025d0b973cdf7bb5bac')
+        .set('Content-Type', 'application/json')
+        .set('Authorization', `Bearer ${user.token}`)
+        .end((err, res) => {
+          res.should.have.status(404)
+          res.should.be.a('object')
+          res.body.should.have.property('error').that.include('User not found')
+          done()
+        })
+    })
+  })
+  it("Testing why middleware doesn't work", done => {
+    factory.user({}).then(user => {
+      chai
+        .request(server)
+        .get('/api/users/5aa15025973cdf7bb5bac')
+        .set('Content-Type', 'application/json')
+        .set('Authorization', `Bearer ${user.token}`)
+        .end((err, res) => {
+          res.should.have.status(404)
+          res.should.be.a('object')
+          res.body.should.have.property('error').that.include('User not found')
+          done()
+        })
+    })
+  })
 })
