@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 
 const schema = new mongoose.Schema({
+  shortId: Number,
   name: {
     type: String,
     required: [true, 'name is required']
@@ -11,7 +12,7 @@ const schema = new mongoose.Schema({
       ref: 'Session'
     }
   ],
-  teacher: {
+  center: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Center',
     required: [true, 'center is required']
