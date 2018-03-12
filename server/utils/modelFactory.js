@@ -26,7 +26,7 @@ function createUser(options, callback) {
     User.register(newUser, password, (err, user) => {
       if (err) {
         if (!callback) {
-          reject(`Could not create user : ${err}`)
+          reject(Error(`Could not create user : ${err}`))
         } else {
           console.error(`Could not create user :  ${err}`)
         }

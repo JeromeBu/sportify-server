@@ -1,8 +1,7 @@
 const config = require('../../config')
 const passport = require('passport')
 
-const _errorHandler = (err, req, res) => {
-  console.log('in errorHandler : ')
+const _errorHandler = (err, req, res, next) => {
   let error = err
   if (res.statusCode === 200) res.status(503)
   console.error(error)

@@ -14,8 +14,6 @@ exports.initial_get_user = (req, res, next) => {
     })
     .catch(err => {
       res.status(503)
-      // console.log(err)
-      // console.log('next', next)
       return next(err.message)
     })
 }

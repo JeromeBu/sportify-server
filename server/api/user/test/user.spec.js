@@ -69,7 +69,7 @@ describe('GET testing secured route users/:id', () => {
         .set('Content-Type', 'application/json')
         .set('Authorization', `Bearer ${user.token}`)
         .end((err, res) => {
-          res.should.have.status(404)
+          res.should.have.status(503)
           res.should.be.a('object')
           res.body.should.have.property('error').that.include('User not found')
           done()
