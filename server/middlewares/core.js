@@ -1,28 +1,26 @@
+const config = require('../../config')
 const passport = require('passport')
 
-const _errorHandler = function(err, req, res) {
-  if (res.statusCode === 200) res.status(400)
-  console.error(err)
-
-  if (config.ENV === 'production') err = 'An error occurred'
-  res.json({ error: err })
+const _errorHandler = (err, req, res, next) => {
+  // keep next parameter, very important !
+  let error = err
+  if (res.statusCode === 200) res.status(503)
+  console.error(error)
+  if (config.ENV === 'production') error = 'An error occurred'
+  res.json({ error })
 }
 exports.errorHandler = _errorHandler
 
-exports.checkLoggedIn = function(req, res, next) {
-  passport.authenticate('bearer', { session: false }, function(
-    err,
-    user,
-    info
-  ) {
+exports.checkLoggedIn = (req, res, next) => {
+  passport.authenticate('bearer', { session: false }, (err, user) => {
+    // info is also available with err, and user
     if (err) {
-      res.status(400)
+      res.status(503)
       return _errorHandler(err.message)
     }
-    if (!user) {
-      return res.status(401).json({ error: 'Unauthorized' })
-    }
+    if (!user) return res.status(401).json({ error: 'Unauthorized' })
+
     req.currentUser = user
-    next()
+    return next()
   })(req, res, next)
 }

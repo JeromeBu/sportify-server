@@ -1,4 +1,5 @@
 require('dotenv').config() // allows to define env varibles in .env file
+
 const env = process.env.NODE_ENV || 'development'
 
 const config = {
@@ -9,19 +10,19 @@ const config = {
 
 switch (env) {
   case 'development':
-    config.PORT = parseInt(process.env.DEV_APP_PORT) || 3100
+    config.PORT = parseInt(process.env.DEV_APP_PORT, 10) || 3100
     config.MONGODB_URI =
       process.env.DEV_MONGODB_URI || 'mongodb://localhost/sportify'
     break
 
   case 'test':
-    config.PORT = parseInt(process.env.TEST_APP_PORT) || 3101
+    config.PORT = parseInt(process.env.TEST_APP_PORT, 10) || 3101
     config.MONGODB_URI =
       process.env.TEST_MONGODB_URI || 'mongodb://localhost/sportify-test'
     break
 
   case 'production':
-    config.PORT = parseInt(process.env.PORT)
+    config.PORT = parseInt(process.env.PORT, 10)
     config.MONGODB_URI = process.env.PROD_MONGODB_URI
     break
 
