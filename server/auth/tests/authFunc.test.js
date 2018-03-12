@@ -12,19 +12,19 @@ function createTestUsers(options) {
     const initialPassword = 'old_password'
     try {
       await User.remove({})
-      validEmailUser = await factory.user({
+      options.validEmailUser = await factory.user({
         email: 'validEmail@mail.com',
         emailCheckValid: true,
         password: initialPassword,
         passwordChangeValid: true
       })
-      notValidEmailUser = await factory.user({
+      options.notValidEmailUser = await factory.user({
         email: 'notValidEmail@mail.com',
         emailCheckValid: false,
         password: initialPassword,
         passwordChangeValid: true
       })
-      alreadyUsedLinkUser = await factory.user({
+      options.alreadyUsedLinkUser = await factory.user({
         email: 'alreadyUsedLink@mail.com',
         emailCheckValid: true,
         password: initialPassword,
@@ -32,7 +32,7 @@ function createTestUsers(options) {
       })
       const threeHoursAgo = new Date()
       threeHoursAgo.setHours(threeHoursAgo.getHours() - 3)
-      outDatedTokenUser = await factory.user({
+      options.outDatedTokenUser = await factory.user({
         email: 'outDatedToken@mail.com',
         emailCheckValid: true,
         password: initialPassword,

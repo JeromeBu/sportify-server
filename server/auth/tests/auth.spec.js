@@ -422,19 +422,19 @@ describe('Authentication and password recovery', () => {
         emailNotInDb(done, httpVerb)
       })
       it("Raise error if token doen't match users changing password token", done => {
-        wrongToken(done, httpVerb, validEmailUser)
+        wrongToken(done, httpVerb, options.validEmailUser)
       })
       it('Raise error if the change password link has already been used', done => {
-        linkUsed(done, httpVerb, alreadyUsedLinkUser)
+        linkUsed(done, httpVerb, options.alreadyUsedLinkUser)
       })
       it('Raise error if user.passwordChange.token is outdated', done => {
-        tokenOutdated(done, httpVerb, outDatedTokenUser)
+        tokenOutdated(done, httpVerb, options.outDatedTokenUser)
       })
       it('Raise error if user has not validated email', done => {
-        notValidEmail(done, httpVerb, notValidEmailUser)
+        notValidEmail(done, httpVerb, options.notValidEmailUser)
       })
       it('Authorize Reset password page when user is OK ', done => {
-        authorizeAccess(done, httpVerb, validEmailUser)
+        authorizeAccess(done, httpVerb, options.validEmailUser)
       })
     })
 
@@ -457,24 +457,24 @@ describe('Authentication and password recovery', () => {
         emailNotInDb(done, httpVerb)
       })
       it("Raise error if token doen't match users changing password token", done => {
-        wrongToken(done, httpVerb, validEmailUser)
+        wrongToken(done, httpVerb, options.validEmailUser)
       })
       it('Raise error if the change password link has already been used', done => {
-        linkUsed(done, httpVerb, alreadyUsedLinkUser)
+        linkUsed(done, httpVerb, options.alreadyUsedLinkUser)
       })
       it('Raise error if user.passwordChange.token is outdated', done => {
-        tokenOutdated(done, httpVerb, outDatedTokenUser)
+        tokenOutdated(done, httpVerb, options.outDatedTokenUser)
       })
       it('Raise error if user has not validated email', done => {
-        notValidEmail(done, httpVerb, notValidEmailUser)
+        notValidEmail(done, httpVerb, options.notValidEmailUser)
       })
       it('Raise error if no password given', done => {
         const body = {}
         chai
           .request(server)
           .post(
-            `/auth/reset_password?email=${validEmailUser.email}&token=${
-              validEmailUser.passwordChange.token
+            `/auth/reset_password?email=${options.validEmailUser.email}&token=${
+              options.validEmailUser.passwordChange.token
             }`
           )
           .send(body)
@@ -495,8 +495,8 @@ describe('Authentication and password recovery', () => {
         chai
           .request(server)
           .post(
-            `/auth/reset_password?email=${validEmailUser.email}&token=${
-              validEmailUser.passwordChange.token
+            `/auth/reset_password?email=${options.validEmailUser.email}&token=${
+              options.validEmailUser.passwordChange.token
             }`
           )
           .send(body)
@@ -517,8 +517,8 @@ describe('Authentication and password recovery', () => {
         chai
           .request(server)
           .post(
-            `/auth/reset_password?email=${validEmailUser.email}&token=${
-              validEmailUser.passwordChange.token
+            `/auth/reset_password?email=${options.validEmailUser.email}&token=${
+              options.validEmailUser.passwordChange.token
             }`
           )
           .send(body)

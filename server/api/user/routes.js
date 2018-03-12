@@ -1,4 +1,3 @@
-const config = require('../../../config')
 const express = require('express')
 const { checkLoggedIn } = require('../../middlewares/core')
 const userController = require('../user/controller')

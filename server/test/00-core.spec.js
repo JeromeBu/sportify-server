@@ -2,6 +2,7 @@ const chai = require('chai')
 const should = require('chai').should()
 const chaiHttp = require('chai-http')
 const server = require('../../index')
+const { errorHandler } = require('../middlewares/core')
 
 chai.use(chaiHttp)
 
@@ -31,5 +32,19 @@ describe('Home', () => {
           done()
         })
     })
+  })
+})
+
+describe('Test errorHandler middleware', () => {
+  beforeEach(() => {
+    const json = () => {}
+    const res = {
+      statusCode: 200
+    }
+  })
+  it('Changes error to 503 if status 200', done => {
+    errorHandler.should.be.a('function')
+    errorHandler.should.be.a('object')
+    done()
   })
 })

@@ -61,7 +61,7 @@ describe('GET testing secured route users/:id', () => {
         })
     })
   })
-  it("Testing why middleware doesn't work", done => {
+  it('Raise an error if param user id is not the right format', done => {
     factory.user({}).then(user => {
       chai
         .request(server)
@@ -71,7 +71,7 @@ describe('GET testing secured route users/:id', () => {
         .end((err, res) => {
           res.should.have.status(503)
           res.should.be.a('object')
-          res.body.should.have.property('error').that.include('User not found')
+          res.body.should.have.property('error')
           done()
         })
     })

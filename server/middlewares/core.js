@@ -2,6 +2,7 @@ const config = require('../../config')
 const passport = require('passport')
 
 const _errorHandler = (err, req, res, next) => {
+  // keep next parameter, very important !
   let error = err
   if (res.statusCode === 200) res.status(503)
   console.error(error)
