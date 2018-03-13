@@ -22,6 +22,12 @@ const teachers = []
 const activities = []
 const sessions = []
 
+const centersName = [
+  'Belleville - Ménilmontant',
+  "Place D'Italie",
+  'Denfert - Alésia'
+]
+
 const seed = async () => {
   console.log('Creating users...\n')
   let i = null
@@ -49,7 +55,7 @@ const seed = async () => {
 
   console.log('\nCreating centers...\n')
   for (let j = 1; j <= 3; j += 1) {
-    centers.push(await factory.center({ shortId: j }))
+    centers.push(await factory.center({ shortId: j, name: centersName[j - 1] }))
     console.log(`Short Id : ${centers[j - 1].shortId} - ${centers[j - 1].name}`)
   }
 
