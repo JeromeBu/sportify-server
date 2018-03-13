@@ -1,6 +1,6 @@
 const Session = require('./model')
 
-exports.get = (req, res, next) => {
+exports.index = (req, res, next) => {
   Session.find({})
     .exec()
     .then(sessions => {
