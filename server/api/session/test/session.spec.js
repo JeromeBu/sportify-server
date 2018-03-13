@@ -9,14 +9,14 @@ const log = console.log()
 
 chai.use(chaiHttp)
 
-describe.only('TESTING SESSIONS ROUTES', () => {
+describe('TESTING SESSIONS ROUTES', () => {
   beforeEach(done => {
     Session.remove({})
       .then(() => done())
       .catch(e => log(e))
   })
 
-  it.only('should GET an array with one session without error', async done => {
+  it('should GET an array with one session without error', async done => {
     await factory.session({})
     chai
       .request(server)
