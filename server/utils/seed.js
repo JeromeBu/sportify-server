@@ -47,11 +47,19 @@ const seed = async () => {
     )
   }
 
-  await factory.user({
-    shortId: 25,
-    email: 'jerome@mail.com',
-    password: 'azer'
-  })
+  console.log('\nCreating specific users...\n')
+  users.push(
+    await factory.user({
+      shortId: 25,
+      email: 'jerome@mail.com',
+      password: 'azer'
+    })
+  )
+  console.log(
+    `Short Id : ${users[initial - 1].shortId} - ${
+      users[initial - 1].email
+    } - Password: ${users[initial - 1].password}`
+  )
 
   console.log('\nCreating centers...\n')
   for (let j = 1; j <= 3; j += 1) {
@@ -73,12 +81,14 @@ const seed = async () => {
     }
     const min = j * 10
     const max = (j + 1) * 10
-    Activity.find({ shortId: { $gt: min, $lt: max } }).exec((err, activ) => {
-      center.activities = activ
-      center.save(err => {
-        if (err) console.log('error on save of center:', err)
-      })
-    })
+    await Activity.find({ shortId: { $gt: min, $lt: max } }).exec(
+      (err, activ) => {
+        center.activities = activ
+        center.save(err => {
+          if (err) console.log('error on save of center:', err)
+        })
+      }
+    )
   }
 
   console.log('\nCreating sessions...')
@@ -101,13 +111,28 @@ const seed = async () => {
     }
     const min = l * 10
     const max = (l + 1) * 10
-    Session.find({ shortId: { $gt: min, $lt: max } }).exec((err, sess) => {
-      activity.sessions = sess
-      activity.save(err => {
-        if (err) console.log('error on save of activity:', err)
-      })
-    })
+    await Session.find({ shortId: { $gt: min, $lt: max } }).exec(
+      (err, sess) => {
+        activity.sessions = sess
+        activity.save(e => {
+          if (e) console.log('error on save of activity:', e)
+        })
+      }
+    )
   }
+
+  await User.findOne({ shortId: 25 })
+    .exec()
+    .then(async user => {
+      console.log('in find one user : ', user.email)
+      await Session.find({ shortId: { $in: [11, 21, 31] } })
+        .exec()
+        .then(async ses => {
+          console.log('in find Sessions : ', ses)
+          user.account.sessions = ses
+          await user.save()
+        })
+    })
 
   console.log(
     `\n \nCreated ${users.length} users, ${teachers.length} teachers, ${
