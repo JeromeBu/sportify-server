@@ -26,6 +26,29 @@ const activities = [
   'Abdo-Fessiers'
 ]
 
+const centers = [
+  'Bastille',
+  'Belleville - Ménilmontant',
+  'République',
+  "Place D'Italie",
+  'Denfert - Alésia',
+  'Montparnasse',
+  'La Motte Picquet',
+  'Beaugrenelle',
+  'Batignolles - Place De Clichy',
+  'Barbès-Marcadet',
+  'Buttes Chaumont-Jaurès',
+  'Bourse-Opéra'
+]
+
+const images = [
+  'https://www.shape.com/sites/shape.com/files/fb-crossfit-injuries.jpg',
+  'http://www.snatch-moutiers.com/wp-content/uploads/2016/02/crossfit_3_temp-1.jpg',
+  'http://attitude-nutrition.fr/wp-content/uploads/crossfit-1.jpg',
+  'https://www.esdo.fr/wp-content/uploads/2016/12/banniere_trx_suspension_training.jpg',
+  'https://cdn-maf0.heartyhosting.com/sites/muscleandfitness.com/files/styles/full_node_image_1090x614/public/cardio-treadmill_1.jpg?itok=LTsMm6jA'
+]
+
 const inTwoWeeks = new Date()
 inTwoWeeks.setDate(inTwoWeeks.getDate() + 30)
 
@@ -79,7 +102,7 @@ function createCenter(options = {}) {
   const promise = new Promise((resolve, reject) => {
     const center = new Center({
       shortId: options.shortId,
-      name: options.name || faker.company.companyName(),
+      name: options.name || randomFromTable(centers),
       address: options.address || faker.address.streetAddress(),
       activities: options.activities || []
     })
@@ -99,6 +122,7 @@ function createActivity(options = {}) {
     const activity = new Activity({
       shortId: options.shortId,
       name: options.name || randomFromTable(activities),
+      image: options.image || randomFromTable(images),
       sessions: options.sessions || [],
       center: options.center || (await createCenter())
     })

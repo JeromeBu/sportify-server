@@ -6,6 +6,9 @@ const schema = new mongoose.Schema({
     type: String,
     required: [true, 'name is required']
   },
+  image: {
+    type: String
+  },
   sessions: [
     {
       type: mongoose.Schema.Types.ObjectId,
