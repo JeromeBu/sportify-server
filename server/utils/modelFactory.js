@@ -43,8 +43,6 @@ const centers = [
 
 const images = [
   'https://www.shape.com/sites/shape.com/files/fb-crossfit-injuries.jpg',
-  'http://www.snatch-moutiers.com/wp-content/uploads/2016/02/crossfit_3_temp-1.jpg',
-  'http://attitude-nutrition.fr/wp-content/uploads/crossfit-1.jpg',
   'https://www.esdo.fr/wp-content/uploads/2016/12/banniere_trx_suspension_training.jpg',
   'https://cdn-maf0.heartyhosting.com/sites/muscleandfitness.com/files/styles/full_node_image_1090x614/public/cardio-treadmill_1.jpg?itok=LTsMm6jA'
 ]

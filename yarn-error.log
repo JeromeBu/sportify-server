@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/Cellar/yarn/1.5.1_1/libexec/bin/yarn.js seed
+  /usr/local/bin/node /usr/local/Cellar/yarn/1.5.1_1/libexec/bin/yarn.js test
 
 PATH: 
   /Users/kevin/Library/Android/sdk/tools/bin:/Users/kevin/Library/Android/sdk/tools:/Users/kevin/Library/Android/sdk/platform-tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/kevin/Library/Android/sdk/tools/bin:/Users/kevin/Library/Android/sdk/tools:/Users/kevin/Library/Android/sdk/platform-tools
@@ -4435,9 +4435,9 @@ Lockfile:
 
 Trace: 
   Error: Command failed.
-  Exit code: 1
+  Exit code: 6
   Command: sh
-  Arguments: -c node server/utils/seed.js
+  Arguments: -c NODE_ENV=test mocha --recursive **/**.spec.js
   Directory: /Users/kevin/Documents/LeReacteur/Sportify/sportify-server
   Output:
   
