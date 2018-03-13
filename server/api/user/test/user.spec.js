@@ -1,5 +1,5 @@
 const server = require('../../../../index')
-const User = require('../../user/model')
+const User = require('../model')
 const factory = require('../../../utils/modelFactory')
 
 const chai = require('chai')
