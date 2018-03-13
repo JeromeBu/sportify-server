@@ -4435,11 +4435,7 @@ Lockfile:
 
 Trace: 
   Error: Command failed.
-<<<<<<< HEAD
   Exit code: 6
-=======
-  Exit code: 2
->>>>>>> fafb55bb73773f88b431ecd3a2b44af5469e1581
   Command: sh
   Arguments: -c NODE_ENV=test mocha --recursive **/**.spec.js
   Directory: /Users/jerome/code/JeromeBu/Sportify/sportify-server
