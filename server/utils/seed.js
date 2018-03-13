@@ -41,6 +41,12 @@ const seed = async () => {
     )
   }
 
+  await factory.user({
+    shortId: 25,
+    email: 'jerome@mail.com',
+    password: 'azer'
+  })
+
   console.log('\nCreating centers...\n')
   for (let j = 1; j <= 3; j += 1) {
     centers.push(await factory.center({ shortId: j }))
