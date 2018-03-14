@@ -115,6 +115,7 @@ const seed = async () => {
         }`
       )
     }
+
     const min = l * 10
     const max = (l + 1) * 10
     await Session.find({ shortId: { $gt: min, $lt: max } }).exec(
