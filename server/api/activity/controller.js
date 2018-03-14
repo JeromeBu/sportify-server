@@ -9,7 +9,6 @@ exports.index = (req, res, next) => {
     })
     .exec()
     .then(activities => {
-      console.log('ACTIVITIES', activities)
       if (!activities) res.status(404).json({ error: 'Activities not found' })
       res.json(activities)
     })

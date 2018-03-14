@@ -12,7 +12,6 @@ const _errorHandler = (err, req, res, next) => {
 exports.errorHandler = _errorHandler
 
 exports.checkLoggedIn = (req, res, next) => {
-  console.log('Headers : ', req.headers)
   passport.authenticate('bearer', { session: false }, (err, user) => {
     // info is also available with err, and user
     if (err) {
