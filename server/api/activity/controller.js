@@ -1,12 +1,19 @@
 const Activity = require('./model')
 const Center = require('../center/model')
+const Session = require('../session/model')
 
 exports.index = (req, res, next) => {
   Activity.find({})
-    .populate({
-      path: 'center',
-      model: Center
-    })
+    .populate([
+      {
+        path: 'center',
+        model: Center
+      },
+      {
+        path: 'sessions',
+        model: Session
+      }
+    ])
     .exec()
     .then(activities => {
       console.log('ACTIVITIES', activities)
