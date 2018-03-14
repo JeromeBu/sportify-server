@@ -44,6 +44,12 @@ const UserSchema = new mongoose.Schema({
         ref: 'Session'
       }
     ],
+    favoriteActivities: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Activity'
+      }
+    ],
     role: {
       type: String,
       enum: ['user', 'teacher'],

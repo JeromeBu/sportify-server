@@ -1,6 +1,7 @@
 const Activity = require('./model')
 const Center = require('../center/model')
 const Session = require('../session/model')
+const User = require('../user/model')
 
 exports.index = (req, res, next) => {
   Activity.find({})
@@ -16,7 +17,6 @@ exports.index = (req, res, next) => {
     ])
     .exec()
     .then(activities => {
-      console.log('ACTIVITIES', activities)
       if (!activities) res.status(404).json({ error: 'Activities not found' })
       res.json(activities)
     })
