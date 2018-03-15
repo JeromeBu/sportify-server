@@ -36,12 +36,10 @@ exports.userUpdate = (req, res, next) => {
 
   function updateFavorites(user) {
     user.account.favoriteActivities = req.body.favorites
-    console.log('BODY', req.body.favorites)
-    console.log('TYPE', typeof req.body.favorites)
+
     user.save((err, userUpdated) => {
       if (err) return res.status(503)
       if (!err) {
-        console.log('UPDATED', userUpdated)
         return res.json(userUpdated)
       }
     })
