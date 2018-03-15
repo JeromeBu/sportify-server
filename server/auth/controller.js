@@ -10,7 +10,7 @@ const confirmEmail = require('../emails/confirmationEmail')
 const forgetPasswordEmail = require('../emails/forgetPasswordEmail')
 
 exports.sign_up = (req, res) => {
-  const { email, firstName, lastName, role, gender, password } = req.body
+  const { email, firstName, lastName, gender, password } = req.body
   User.register(
     new User({
       email,
@@ -22,7 +22,6 @@ exports.sign_up = (req, res) => {
       account: {
         firstName,
         lastName,
-        role,
         gender
       }
     }),

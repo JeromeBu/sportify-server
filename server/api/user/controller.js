@@ -1,13 +1,21 @@
 const User = require('./model')
 const Activity = require('../activity/model')
+const Center = require('../center/model')
 
-exports.userShow = (req, res, next) => {
+exports.show = (req, res, next) => {
   // const { currentUser } = req   value available when user logged (middlware)
   User.findById(req.params.id)
     .select('account')
     .populate({
       path: 'account.sessions',
-      populate: [{ path: 'activity', model: Activity }]
+      populate: [
+        {
+          path: 'activity',
+          model: Activity,
+          populate: { path: 'center', model: Center }
+        },
+        { path: 'teacher', model: User, select: 'account' }
+      ]
     })
     .exec()
     .then(user => {
