@@ -55,24 +55,23 @@ exports.show = (req, res, next) => {
 // }
 
 exports.update = (req, res, next) => {
+  const { account } = req.body
   console.log('Request Body : ', req.body)
   User.findById(req.params.id)
     .exec()
     .then(user => {
       console.log('USER : ', user)
-      res.status(204).json({ message: 'user updated' })
+      user.account = account
+      user.save(err => {
+        if (err) {
+          res.status(400)
+          return next(err)
+        }
+        return res.status(204).json({ message: 'User updated' })
+      })
     })
     .catch(err => {
       res.status(503)
       return next(err.message)
     })
-
-  // function updateFavorites(user) {
-  //   user.account.favoriteActivities = req.body.favorites
-
-  //   user.save((err, userUpdated) => {
-  //     if (err) return res.status(503)
-  //     return res.json(userUpdated)
-  //   })
-  // }
 }
