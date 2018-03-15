@@ -33,6 +33,15 @@ exports.show = (req, res, next) => {
     {
       // c'est le populate version aggregate
       $lookup: {
+        from: 'centers', // the model mongoose mets au pluriel cet enfoiré
+        localField: 'center', // the nested object
+        foreignField: '_id', // le match
+        as: 'center_doc' // renvoie dans un object de center
+      }
+    },
+    {
+      // c'est le populate version aggregate
+      $lookup: {
         from: 'sessions', // the model
         localField: 'sessions', // the nested object
         foreignField: '_id', // le match
@@ -44,9 +53,11 @@ exports.show = (req, res, next) => {
         _id: mongoose.Types.ObjectId(id)
       }
     },
+    { $unwind: '$center_doc' }, // desconstruit l'array
     {
       $project: {
         name: 1,
+        center_doc: { name: 1, address: 1 },
         // on filtre le nouvelle array sessions_docs
         sessions_docs: {
           $filter: {
@@ -61,8 +72,8 @@ exports.show = (req, res, next) => {
     }
   ])
     .then(activity => {
-      console.log('activity', activity)
-      if (!activity) res.status(404).json({ error: 'activity not found' })
+      if (!activity)
+        return res.status(404).json({ error: 'activity not found' })
       return res.json(activity)
     })
     .catch(err => {
