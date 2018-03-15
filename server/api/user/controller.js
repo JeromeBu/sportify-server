@@ -30,3 +30,26 @@ exports.show = (req, res, next) => {
       return next(err.message)
     })
 }
+
+exports.update = (req, res, next) => {
+  User.findById(req.params.id)
+    .exec()
+    .then(user => {
+      updateFavorites(user)
+    })
+    .catch(err => {
+      res.status(503)
+      return next(err.message)
+    })
+
+  function updateFavorites(user) {
+    user.account.favoriteActivities = req.body.favorites
+
+    user.save((err, userUpdated) => {
+      if (err) return res.status(503)
+      if (!err) {
+        return res.json(userUpdated)
+      }
+    })
+  }
+}
