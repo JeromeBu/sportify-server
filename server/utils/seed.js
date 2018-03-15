@@ -36,6 +36,12 @@ const seed = async () => {
     console.log(`Short Id : ${users[i - 1].shortId} - ${users[i - 1].email}`)
   }
 
+  await factory.user({
+    shortId: 30,
+    email: 'tessier@gmail.com',
+    password: '123456'
+  })
+
   console.log('\nCreating teachers...\n')
   const initial = i
   for (i; i <= 11; i += 1) {
@@ -109,6 +115,7 @@ const seed = async () => {
         }`
       )
     }
+
     const min = l * 10
     const max = (l + 1) * 10
     await Session.find({ shortId: { $gt: min, $lt: max } }).exec(
