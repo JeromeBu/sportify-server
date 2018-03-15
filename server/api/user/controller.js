@@ -31,25 +31,48 @@ exports.show = (req, res, next) => {
     })
 }
 
+// exports.update = (req, res, next) => {
+//   User.findById(req.params.id)
+//     .exec()
+//     .then(user => {
+//       updateFavorites(user)
+//     })
+//     .catch(err => {
+//       res.status(503)
+//       return next(err.message)
+//     })
+
+//   function updateFavorites(user) {
+//     user.account.favoriteActivities = req.body.favorites
+
+//     user.save((err, userUpdated) => {
+//       if (err) return res.status(503)
+//       if (!err) {
+//         return res.json(userUpdated)
+//       }
+//     })
+//   }
+// }
+
 exports.update = (req, res, next) => {
+  console.log('Request Body : ', req.body)
   User.findById(req.params.id)
     .exec()
     .then(user => {
-      updateFavorites(user)
+      console.log('USER : ', user)
+      res.status(204).json({ message: 'user updated' })
     })
     .catch(err => {
       res.status(503)
       return next(err.message)
     })
 
-  function updateFavorites(user) {
-    user.account.favoriteActivities = req.body.favorites
+  // function updateFavorites(user) {
+  //   user.account.favoriteActivities = req.body.favorites
 
-    user.save((err, userUpdated) => {
-      if (err) return res.status(503)
-      if (!err) {
-        return res.json(userUpdated)
-      }
-    })
-  }
+  //   user.save((err, userUpdated) => {
+  //     if (err) return res.status(503)
+  //     return res.json(userUpdated)
+  //   })
+  // }
 }
