@@ -31,7 +31,7 @@ exports.show = (req, res, next) => {
     })
 }
 
-exports.userUpdate = (req, res, next) => {
+exports.update = (req, res, next) => {
   User.findById(req.params.id)
     .exec()
     .then(user => {
