@@ -56,6 +56,7 @@ exports.show = (req, res, next) => {
 
 exports.update = (req, res, next) => {
   const { account } = req.body
+  account.role = 'user'
   console.log('Request Body : ', req.body)
   User.findById(req.params.id)
     .exec()
