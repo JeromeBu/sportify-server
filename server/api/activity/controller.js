@@ -87,7 +87,6 @@ exports.show = (req, res, next) => {
   ])
     .then(activities => {
       const activity = activities[0]
-      console.log('activity : ', activity)
       if (!activity)
         return res.status(404).json({ error: 'activity not found' })
       return res.json(activity)
