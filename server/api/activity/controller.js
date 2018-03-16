@@ -41,7 +41,7 @@ exports.show = (req, res, next) => {
         from: 'sessions', // the model
         localField: 'sessions', // the nested object
         foreignField: '_id', // le match
-        as: 'sessions_docs' // renvoie dans un array sessions_docs
+        as: 'sessions' // renvoie dans un array sessions
       }
     },
     {
@@ -52,10 +52,10 @@ exports.show = (req, res, next) => {
     {
       $project: {
         name: 1,
-        // on filtre le nouvelle array sessions_docs
-        sessions_docs: {
+        // on filtre le nouvelle array sessions
+        sessions: {
           $filter: {
-            input: '$sessions_docs',
+            input: '$sessions',
             as: 'date', // kind of element of an iteration
             cond: {
               $gte: ['$$date.startsAt', today.toISOString()]
@@ -66,7 +66,7 @@ exports.show = (req, res, next) => {
     }
   ])
     .then(activity => {
-      console.log('activity', activity)
+      console.log('activity : ', activity)
       if (!activity) res.status(404).json({ error: 'activity not found' })
       return res.json(activity)
     })

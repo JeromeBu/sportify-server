@@ -26,42 +26,18 @@ exports.show = (req, res, next) => {
       })
     })
     .catch(err => {
+      console.log('error when getting user')
       res.status(503)
       return next(err.message)
     })
 }
 
-// exports.update = (req, res, next) => {
-//   User.findById(req.params.id)
-//     .exec()
-//     .then(user => {
-//       updateFavorites(user)
-//     })
-//     .catch(err => {
-//       res.status(503)
-//       return next(err.message)
-//     })
-
-//   function updateFavorites(user) {
-//     user.account.favoriteActivities = req.body.favorites
-
-//     user.save((err, userUpdated) => {
-//       if (err) return res.status(503)
-//       if (!err) {
-//         return res.json(userUpdated)
-//       }
-//     })
-//   }
-// }
-
 exports.update = (req, res, next) => {
   const { account } = req.body
   account.role = 'user'
-  console.log('Request Body : ', req.body)
   User.findById(req.params.id)
     .exec()
     .then(user => {
-      console.log('USER : ', user)
       user.account = account
       user.save(err => {
         if (err) {
