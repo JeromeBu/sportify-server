@@ -23,7 +23,7 @@ switch (env) {
 
   case 'production':
     config.PORT = parseInt(process.env.PORT, 10)
-    config.MONGODB_URI = process.env.PROD_MONGODB_URI
+    config.MONGODB_URI = process.env.MONGODB_URI
     break
 
   default:
