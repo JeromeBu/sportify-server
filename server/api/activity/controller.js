@@ -67,6 +67,7 @@ exports.show = (req, res, next) => {
     {
       $project: {
         name: 1,
+        image: 1,
         center: {
           name: 1,
           address: 1
