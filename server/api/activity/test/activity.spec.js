@@ -43,4 +43,45 @@ describe('TESTING ACTIVITIES ROUTES', () => {
       })
       .catch(e => console.log(e))
   })
+
+  it('should GET one activity  without error', done => {
+    factory
+      .activity({})
+      .then(activity => {
+        chai
+          .request(server)
+          .get(`/api/activities/${activity._id}`)
+          .end((err, res) => {
+            should.not.exist(err)
+            res.should.have.status(200)
+
+            res.body[0].should.have.keys(
+              '_id',
+              'center_doc',
+              'name',
+              'sessions_docs'
+            )
+
+            res.body[0].sessions_docs.should.be.an('array')
+
+            res.body[0].sessions_docs.every(i =>
+              i.should.to.have.all.keys(
+                '__v',
+                '_id',
+                'activity',
+                'bookedBy',
+                'capacity',
+                'duration',
+                'peoplePresent',
+                'shortId',
+                'startsAt',
+                'teacher'
+              )
+            )
+
+            done()
+          })
+      })
+      .catch(e => console.log(e))
+  })
 })
