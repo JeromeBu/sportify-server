@@ -44,7 +44,7 @@ exports.show = (req, res, next) => {
         from: 'centers', // the model mongoose mets au pluriel cet enfoiré
         localField: 'center', // the nested object
         foreignField: '_id', // le match
-        as: 'center_doc' // renvoie dans un object de center
+        as: 'center' // renvoie dans un object de center
       }
     },
     {
@@ -62,12 +62,12 @@ exports.show = (req, res, next) => {
       }
     },
     {
-      $unwind: '$center_doc'
+      $unwind: '$center'
     }, // desconstruit l'array
     {
       $project: {
         name: 1,
-        center_doc: {
+        center: {
           name: 1,
           address: 1
         },
