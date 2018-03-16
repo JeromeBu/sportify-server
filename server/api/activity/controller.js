@@ -1,22 +1,68 @@
 const Activity = require('./model')
 const mongoose = require('mongoose')
-const Center = require('../center/model')
-const Session = require('../session/model')
 const chalk = require('chalk')
 
 exports.index = (req, res, next) => {
-  Activity.find({})
-    .populate([
-      {
-        path: 'center',
-        model: Center
-      },
-      {
-        path: 'sessions',
-        model: Session
+  const today = new Date()
+
+  Activity.aggregate([
+    // Filter first
+    {
+      $geoNear: {
+        near: { type: 'Point', coordinates: [2.36051359999999, 48.8737157] },
+        distanceField: 'distance',
+        spherical: true
       }
-    ])
-    .exec()
+    },
+    // Then join
+    {
+      $lookup: {
+        from: 'sessions', // the model
+        localField: 'sessions', // the nested object
+        foreignField: '_id', // le match
+        as: 'sessions_docs' // renvoie dans un array sessions_docs
+      }
+    },
+    {
+      $lookup: {
+        from: 'centers', // the model
+        localField: 'center', // the nested object
+        foreignField: '_id', // le match
+        as: 'centers_docs' // renvoie dans un array sessions_docs
+      }
+    },
+    {
+      $project: {
+        name: 1,
+        image: 1,
+        distance: 1,
+        centers_docs: 1,
+        // on filtre le nouvelle array sessions_docs
+        sessions_docs: {
+          $filter: {
+            input: '$sessions_docs',
+            as: 'date', // kind of element of an iteration
+            cond: {
+              $gte: ['$$date.startsAt', today.toISOString()]
+            }
+          }
+        }
+      }
+    },
+    { $unwind: '$sessions_docs' },
+    { $unwind: '$centers_docs' },
+    { $sort: { 'sessions_docs.startsAt': 1 } },
+    {
+      $group: {
+        _id: '$_id',
+        name: { $first: '$name' },
+        image: { $first: '$image' },
+        distance: { $first: '$distance' },
+        center: { $first: '$centers_docs.name' },
+        sessions: { $first: '$sessions_docs.startsAt' }
+      }
+    }
+  ])
     .then(activities => {
       // console.log(chalk.green('ACTIVITIES'), activities)
       if (!activities) res.status(404).json({ error: 'Activities not found' })
