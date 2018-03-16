@@ -6,7 +6,8 @@ const chalk = require('chalk')
 
 exports.index = (req, res, next) => {
   Activity.find({})
-    .populate([{
+    .populate([
+      {
         path: 'center',
         model: Center
       },
@@ -18,9 +19,10 @@ exports.index = (req, res, next) => {
     .exec()
     .then(activities => {
       // console.log(chalk.green('ACTIVITIES'), activities)
-      if (!activities) res.status(404).json({
-        error: 'Activities not found'
-      })
+      if (!activities)
+        return res.status(404).json({
+          error: 'Activities not found'
+        })
       return res.json(activities)
     })
     .catch(err => {
@@ -31,63 +33,62 @@ exports.index = (req, res, next) => {
 }
 
 exports.show = (req, res, next) => {
-  const {
-    id
-  } = req.params
+  const { id } = req.params
   // send only sessions that are for the current day or above
   const today = new Date()
 
-  Activity.aggregate([{
-        // c'est le populate version aggregate
-        $lookup: {
-          from: 'centers', // the model mongoose mets au pluriel cet enfoiré
-          localField: 'center', // the nested object
-          foreignField: '_id', // le match
-          as: 'center_doc' // renvoie dans un object de center
-        }
-      },
-      {
-        // c'est le populate version aggregate
-        $lookup: {
-          from: 'sessions', // the model
-          localField: 'sessions', // the nested object
-          foreignField: '_id', // le match
-          as: 'sessions_docs' // renvoie dans un array sessions_docs
-        }
-      },
-      {
-        $match: {
-          _id: mongoose.Types.ObjectId(id)
-        }
-      },
-      {
-        $unwind: '$center_doc'
-      }, // desconstruit l'array
-      {
-        $project: {
+  Activity.aggregate([
+    {
+      // c'est le populate version aggregate
+      $lookup: {
+        from: 'centers', // the model mongoose mets au pluriel cet enfoiré
+        localField: 'center', // the nested object
+        foreignField: '_id', // le match
+        as: 'center' // renvoie dans un object de center
+      }
+    },
+    {
+      // c'est le populate version aggregate
+      $lookup: {
+        from: 'sessions', // the model
+        localField: 'sessions', // the nested object
+        foreignField: '_id', // le match
+        as: 'sessions' // renvoie dans un array sessions
+      }
+    },
+    {
+      $match: {
+        _id: mongoose.Types.ObjectId(id)
+      }
+    },
+    {
+      $unwind: '$center'
+    }, // desconstruit l'array
+    {
+      $project: {
+        name: 1,
+        center: {
           name: 1,
-          center_doc: {
-            name: 1,
-            address: 1
-          },
-          // on filtre le nouvelle array sessions_docs
-          sessions_docs: {
-            $filter: {
-              input: '$sessions_docs',
-              as: 'date', // kind of element of an iteration
-              cond: {
-                $gte: ['$$date.startsAt', today.toISOString()]
-              }
+          address: 1
+        },
+        // on filtre le nouvelle array sessions
+        sessions: {
+          $filter: {
+            input: '$sessions',
+            as: 'date', // kind of element of an iteration
+            cond: {
+              $gte: ['$$date.startsAt', today.toISOString()]
             }
           }
         }
       }
-    ])
-    .then(activity => {
+    }
+  ])
+    .then(activities => {
+      const activity = activities[0]
+      console.log('activity : ', activity)
       if (!activity)
-        return res.status(404).json({
-          error: 'activity not found'
-        })
+        return res.status(404).json({ error: 'activity not found' })
       return res.json(activity)
     })
     .catch(err => {

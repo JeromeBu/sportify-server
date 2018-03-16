@@ -3,8 +3,12 @@ const passport = require('passport')
 
 const _errorHandler = (err, req, res, next) => {
   // keep next parameter, very important !
+  console.log('Error handler : ')
   let error = err
-  if (res.statusCode === 200) res.status(503)
+  if (res.statusCode === 200) {
+    console.log('Error arrived with status 200')
+    res.status(503)
+  }
   console.error(error)
   if (config.ENV === 'production') error = 'An error occurred'
   res.json({ error })
