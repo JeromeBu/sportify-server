@@ -1,6 +1,7 @@
 const Activity = require('./model')
 const mongoose = require('mongoose')
 const Center = require('../center/model')
+const Session = require('../session/model')
 const chalk = require('chalk')
 
 exports.index = (req, res, next) => {
@@ -9,6 +10,10 @@ exports.index = (req, res, next) => {
       {
         path: 'center',
         model: Center
+      },
+      {
+        path: 'sessions',
+        model: Session
       }
     ])
     .exec()

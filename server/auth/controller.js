@@ -8,6 +8,8 @@ const config = require('../../config')
 const User = require('../api/user/model')
 const confirmEmail = require('../emails/confirmationEmail')
 const forgetPasswordEmail = require('../emails/forgetPasswordEmail')
+const Activity = require('../api/activity/model')
+const Center = require('../api/center/model')
 
 exports.sign_up = (req, res) => {
   const { email, firstName, lastName, gender, password } = req.body
@@ -61,14 +63,34 @@ exports.log_in = (req, res, next) => {
     if (!user) return res.status(401).json({ error: 'Unauthorized' })
     if (!user.emailCheck.valid)
       return res.status(206).json({ message: 'Please confirm email first' })
-    return res.json({
-      message: 'Login successful',
-      user: {
-        _id: user.id,
-        token: user.token,
-        account: user.account
-      }
-    })
+    User.findById(user.id)
+      .populate({
+        path: 'account.sessions',
+        populate: [
+          {
+            path: 'activity',
+            model: Activity,
+            populate: { path: 'center', model: Center }
+          },
+          { path: 'teacher', model: User, select: 'account' }
+        ]
+      })
+      .exec()
+      .then(populatedUser =>
+        res.json({
+          message: 'Login successful',
+          user: {
+            _id: populatedUser.id,
+            token: populatedUser.token,
+            account: populatedUser.account
+          }
+        })
+      )
+      .catch(e => {
+        console.log(e)
+        res.status(503)
+        return next(e.message)
+      })
   })(req, res, next)
 }
 

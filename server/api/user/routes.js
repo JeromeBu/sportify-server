@@ -4,7 +4,9 @@ const userController = require('../user/controller')
 
 const router = express.Router()
 
-// L'authentification est obligatoire pour cette route
-router.get('/:id', checkLoggedIn, userController.show)
+// L'authentification est obligatoire pour ces routes
+router
+  .get('/:id', checkLoggedIn, userController.show)
+  .post('/:id', checkLoggedIn, userController.update)
 
 module.exports = router
