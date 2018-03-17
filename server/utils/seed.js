@@ -131,11 +131,9 @@ const seed = async () => {
   await User.findOne({ shortId: 25 })
     .exec()
     .then(async user => {
-      console.log('in find one user : ', user.email)
       await Session.find({ shortId: { $in: [11, 21, 31] } })
         .exec()
         .then(async ses => {
-          console.log('in find Sessions : ', ses)
           user.account.sessions = ses
           await user.save()
         })
