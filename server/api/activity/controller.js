@@ -85,32 +85,70 @@ exports.show = (req, res, next) => {
 
   Activity.aggregate([
     {
-      // c'est le populate version aggregate
-      $lookup: {
-        from: 'centers', // the model mongoose mets au pluriel cet enfoiré
-        localField: 'center', // the nested object
-        foreignField: '_id', // le match
-        as: 'center' // renvoie dans un object de center
-      }
-    },
-    {
-      // c'est le populate version aggregate
-      $lookup: {
-        from: 'sessions', // the model
-        localField: 'sessions', // the nested object
-        foreignField: '_id', // le match
-        as: 'sessions' // renvoie dans un array sessions
-      }
-    },
-    {
       $match: {
         _id: mongoose.Types.ObjectId(id)
       }
     },
     {
-      $unwind: '$center'
-    }, // desconstruit l'array
+      // c'est le populate version aggregate
+      $lookup: {
+        from: 'sessions', // référence au model
+        localField: 'sessions', // l'attribut côté Activity
+        foreignField: '_id', // l'attribut côté sessions
+        as: 'sessions_docs' // renvoie dans un array sessions_docs
+      }
+    },
     {
+      $unwind: '$sessions_docs' // on déconstruit l'array sessions_docs
+    },
+    { $sort: { 'sessions_docs.startsAt': 1 } }, // pour sortir les dates dans l'odre croissant
+    {
+      // on a besoin de populate le teacher
+      $lookup: {
+        from: 'users',
+        localField: 'sessions_docs.teacher',
+        foreignField: '_id',
+        as: 'sessions_docs.teacher'
+      }
+    },
+    { $unwind: '$sessions_docs.teacher' }, // de déconstruire l'array pour prendre ce que l'on veut
+    {
+      $group: {
+        // il faut ensuite tout regrouper
+        _id: '$_id', // obligatoire
+        name: { $first: '$name' }, // first retourne le premier doc de chaque group
+        center: { $first: '$center' },
+        image: { $first: '$image' },
+        sessions: {
+          $push: {
+            _id: '$sessions_docs._id',
+            activity: '$sessions_docs.activity',
+            bookedBy: '$sessions_docs.bookedBy',
+            capacity: '$sessions_docs.capacity',
+            duration: '$sessions_docs.duration',
+            peoplePresent: '$sessions_docs.peoplePresent',
+            startsAt: '$sessions_docs.startsAt',
+            teacher: {
+              _id: '$sessions_docs.teacher._id',
+              firstName: '$sessions_docs.teacher.account.firstName',
+              lastName: '$sessions_docs.teacher.account.lastName'
+            }
+          }
+        }
+      }
+    },
+    {
+      $lookup: {
+        // besoin de populate pour prendre le name et l'address
+        from: 'centers',
+        localField: 'center',
+        foreignField: '_id',
+        as: 'center'
+      }
+    },
+    { $unwind: '$center' },
+    {
+      //   // envoyer ce que l'on souhaite
       $project: {
         name: 1,
         image: 1,
@@ -118,7 +156,7 @@ exports.show = (req, res, next) => {
           name: 1,
           address: 1
         },
-        // on filtre le nouvelle array sessions
+        // on filtre le nouvel array sessions pour n'avoir que les sessions à actuelles
         sessions: {
           $filter: {
             input: '$sessions',
@@ -131,8 +169,8 @@ exports.show = (req, res, next) => {
       }
     }
   ])
-    .then(activities => {
-      const activity = activities[0]
+    .then(body => {
+      const activity = body[0]
       console.log('activity : ', activity)
       if (!activity)
         return res.status(404).json({ error: 'activity not found' })
@@ -144,3 +182,5 @@ exports.show = (req, res, next) => {
       return next(err.message)
     })
 }
+
+// { month: { $month: "$date" }, day: { $dayOfMonth: "$date" }, year: { $year: "$date" } }
