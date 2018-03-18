@@ -67,6 +67,16 @@ exports.show = (req, res, next) => {
     },
     { $unwind: '$sessions_docs.teacher' }, // de déconstruire l'array pour prendre ce que l'on veut
     {
+      // on a besoin de populate l'activity
+      $lookup: {
+        from: 'activities',
+        localField: 'sessions_docs.activity',
+        foreignField: '_id',
+        as: 'sessions_docs.activity'
+      }
+    },
+    { $unwind: '$sessions_docs.activity' },
+    {
       $group: {
         // il faut ensuite tout regrouper
         _id: '$_id', // obligatoire
@@ -76,12 +86,14 @@ exports.show = (req, res, next) => {
         sessions: {
           $push: {
             _id: '$sessions_docs._id',
-            activity: '$sessions_docs.activity',
             bookedBy: '$sessions_docs.bookedBy',
             capacity: '$sessions_docs.capacity',
             duration: '$sessions_docs.duration',
             peoplePresent: '$sessions_docs.peoplePresent',
             startsAt: '$sessions_docs.startsAt',
+            activity: {
+              name: '$sessions_docs.activity.name'
+            },
             teacher: {
               _id: '$sessions_docs.teacher._id',
               firstName: '$sessions_docs.teacher.account.firstName',
