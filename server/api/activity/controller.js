@@ -88,7 +88,7 @@ exports.show = (req, res, next) => {
               lastName: '$sessions_docs.teacher.account.lastName'
             }
           }
-        } // mettre tous objects sessions_docs dans un array sessions
+        }
       }
     },
     {
@@ -100,6 +100,7 @@ exports.show = (req, res, next) => {
         as: 'center'
       }
     },
+    { $unwind: '$center' },
     {
       //   // envoyer ce que l'on souhaite
       $project: {
@@ -122,12 +123,12 @@ exports.show = (req, res, next) => {
       }
     }
   ])
-    .then(activities => {
-      // const activity = activities[0]
-      console.log('activities : ', activities)
-      if (!activities)
+    .then(body => {
+      const activity = body[0]
+      console.log('activity : ', activity)
+      if (!activity)
         return res.status(404).json({ error: 'activity not found' })
-      return res.json(activities)
+      return res.json(activity)
     })
     .catch(err => {
       console.log(chalk.red('ERROR'), err)

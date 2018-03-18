@@ -6,11 +6,11 @@ const chai = require('chai')
 const should = require('chai').should()
 const chaiHttp = require('chai-http')
 
-const log = console.log()
+// const log = console.log
 
 chai.use(chaiHttp)
 
-describe('TESTING ACTIVITIES ROUTES', () => {
+describe.only('TESTING ACTIVITIES ROUTES', () => {
   beforeEach(done => {
     Center.remove({}, () => Activity.remove({}, () => done()))
   })
@@ -44,10 +44,12 @@ describe('TESTING ACTIVITIES ROUTES', () => {
       .catch(e => console.log(e))
   })
 
-  it('should GET one activity  without error', done => {
+  it.only('should GET one activity  without error', done => {
     factory
       .activity({})
       .then(activity => {
+        console.log('after factory', factory)
+
         chai
           .request(server)
           .get(`/api/activities/${activity._id}`)
@@ -55,28 +57,36 @@ describe('TESTING ACTIVITIES ROUTES', () => {
             should.not.exist(err)
             res.should.have.status(200)
 
-            res.body[0].should.have.keys(
+            res.body.should.be.an('object')
+
+            res.body.should.have.keys(
               '_id',
-              'center_doc',
+              'center',
               'name',
-              'sessions_docs'
+              'image',
+              'sessions'
             )
 
-            res.body[0].sessions_docs.should.be.an('array')
-
-            res.body[0].sessions_docs.every(i =>
+            res.body.sessions.every(i =>
               i.should.to.have.all.keys(
-                '__v',
                 '_id',
                 'activity',
                 'bookedBy',
                 'capacity',
                 'duration',
                 'peoplePresent',
-                'shortId',
                 'startsAt',
                 'teacher'
               )
+            )
+
+            res.body.sessions[0].bookedBy.should.be.an('array')
+            res.body.sessions[0].peoplePresent.should.be.an('array')
+
+            res.body.sessions[0].teacher.should.have.keys(
+              '_id',
+              'firstName',
+              'lastName'
             )
 
             done()
