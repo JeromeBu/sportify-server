@@ -135,6 +135,21 @@ exports.show = (req, res, next) => {
       const activity = activities[0]
       if (!activity)
         return res.status(404).json({ error: 'activity not found' })
+      // console.log('Activity :', activity)
+
+      activity.sessions = activity.sessions.map(session => {
+        session.activity = {
+          _id: activity._id,
+          name: activity.name,
+          center: { name: activity.center.name }
+        }
+        session.teacher = {
+          _id: session.teacher,
+          account: { firstName: 'Johnny be good' }
+        }
+        // console.log('session : ', session)
+        return session
+      })
       return res.json(activity)
     })
     .catch(err => {
