@@ -194,9 +194,7 @@ exports.show = (req, res, next) => {
   ])
     .then(body => {
       const activity = body[0]
-      console.log('activity : ', activity)
-      console.log('session exemple :', activity.sessions.activity)
-      console.log('teacher exemple :', activity.sessions.teacher)
+      console.log('session exemple :', activity.sessions[0])
       if (!activity)
         return res.status(404).json({ error: 'activity not found' })
       return res.json(activity)
