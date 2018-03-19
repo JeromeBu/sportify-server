@@ -123,6 +123,16 @@ exports.show = (req, res, next) => {
     },
     { $unwind: '$sessions_docs.activity' },
     {
+      // on a besoin de populate le center d'activity
+      $lookup: {
+        from: 'centers',
+        localField: 'sessions_docs.activity.center',
+        foreignField: '_id',
+        as: 'sessions_docs.activity.center'
+      }
+    },
+    { $unwind: '$sessions_docs.activity.center' },
+    {
       $group: {
         // il faut ensuite tout regrouper
         _id: '$_id', // obligatoire
@@ -138,7 +148,8 @@ exports.show = (req, res, next) => {
             peoplePresent: '$sessions_docs.peoplePresent',
             startsAt: '$sessions_docs.startsAt',
             activity: {
-              name: '$sessions_docs.activity.name'
+              name: '$sessions_docs.activity.name',
+              center: { name: '$sessions_docs.activity.center.name' }
             },
             teacher: {
               _id: '$sessions_docs.teacher._id',
