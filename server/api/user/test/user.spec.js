@@ -1,8 +1,6 @@
 const server = require('../../../../index')
 const User = require('../model')
-const Center = require('../../center/model')
-const Activity = require('../../activity/model')
-const Session = require('../../session/model')
+const { emptyDb } = require('../../../utils/testUtils')
 const factory = require('../../../utils/modelFactory')
 
 const chai = require('chai')
@@ -82,31 +80,21 @@ describe('GET testing secured route users/:id', () => {
 })
 
 describe.only('POST /api/users/improved/:id', function() {
-  before(
-    () =>
-      new Promise(resolve => {
-        Center.remove({}, () =>
-          Activity.remove({}, () =>
-            Session.remove({}, () =>
-              User.remove({}, async () => {
-                this.user = await factory.user({ email: 'lulu@mail.com' })
-                const teacher = await factory.user({})
-                const center = await factory.center({})
-                this.sessions = []
-                this.favoriteActivities = []
-                for (let i = 0; i < 3; i++) {
-                  const activity = await factory.activity({ center })
-                  const session = await factory.session({ center, teacher })
-                  this.sessions.push(session.id)
-                  this.favoriteActivities.push(activity.id)
-                }
-                resolve()
-              })
-            )
-          )
-        )
-      })
-  )
+  before(async () => {
+    await emptyDb()
+    // create a user and some sessions and activities
+    this.user = await factory.user({ email: 'lulu@mail.com' })
+    const teacher = await factory.user({})
+    const center = await factory.center({})
+    this.sessions = []
+    this.favoriteActivities = []
+    for (let i = 0; i < 3; i++) {
+      const activity = await factory.activity({ center })
+      const session = await factory.session({ center, teacher })
+      this.sessions.push(session.id)
+      this.favoriteActivities.push(activity.id)
+    }
+  })
   it('Add Sessions to the user', done => {
     chai
       .request(server)
