@@ -1,6 +1,7 @@
-const User = require('./model')
-const Activity = require('../activity/model')
-const Center = require('../center/model')
+const User = require('../model')
+const Activity = require('../../activity/model')
+const Center = require('../../center/model')
+const { handlePromise, addToUser, removeFromUser } = require('./utils')
 
 exports.show = (req, res, next) => {
   // const { currentUser } = req   value available when user logged (middlware)
@@ -66,38 +67,4 @@ exports.updateImproved = (req, res, next) => {
     error:
       'your request has not been handled...dataToAdd or dataToRemove needed'
   })
-}
-
-function handlePromise(promise, res, next) {
-  promise
-    .then(user => {
-      res.status(201).json({
-        message: 'user updated with success',
-        account: user.account
-      })
-    })
-    .catch(err => {
-      res.status(503)
-      return next(err.message)
-    })
-}
-
-async function addToUser(userId, data, res, next) {
-  const name = Object.keys(data)[0]
-  const dataToAdd = data[name]
-  return User.findByIdAndUpdate(
-    { _id: userId },
-    { $push: { [`account.${name}`]: { $each: dataToAdd } } },
-    { new: true }
-  )
-}
-
-async function removeFromUser(userId, data, res, next) {
-  const name = Object.keys(data)[0]
-  const dataToRemove = data[name]
-  return User.findByIdAndUpdate(
-    { _id: userId },
-    { $pullAll: { [`account.${name}`]: dataToRemove } },
-    { new: true }
-  )
 }
