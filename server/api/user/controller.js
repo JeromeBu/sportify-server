@@ -54,45 +54,50 @@ exports.update = (req, res, next) => {
 }
 
 // dans le body on attends les données à mettre à jour de la façon suivante :
-// dataToAdd: { sessions: this.sessions }
-// dataToRemove: { favoriteActivities: this.favoriteActivities }
+// dataToAdd: { sessions: sessions }
+// dataToRemove: { favoriteActivities: favoriteActivities }
 exports.updateImproved = (req, res, next) => {
   const userId = req.params.id
   const { dataToAdd, dataToRemove } = req.body
-  if (dataToAdd) return addToUser(userId, dataToAdd, res)
-  if (dataToRemove) return removeFromUser(userId, dataToRemove, res)
-  res.status(400).json({
+  if (dataToAdd) return handlePromise(addToUser(userId, dataToAdd), res, next)
+  if (dataToRemove)
+    return handlePromise(removeFromUser(userId, dataToRemove), res, next)
+  return res.status(400).json({
     error:
       'your request has not been handled...dataToAdd or dataToRemove needed'
   })
 }
 
-function addToUser(userId, data, res) {
+function handlePromise(promise, res, next) {
+  promise
+    .then(user => {
+      res.status(201).json({
+        message: 'user updated with success',
+        account: user.account
+      })
+    })
+    .catch(err => {
+      res.status(503)
+      return next(err.message)
+    })
+}
+
+async function addToUser(userId, data, res, next) {
   const name = Object.keys(data)[0]
   const dataToAdd = data[name]
-  User.findByIdAndUpdate(
+  return User.findByIdAndUpdate(
     { _id: userId },
     { $push: { [`account.${name}`]: { $each: dataToAdd } } },
     { new: true }
-  ).then(user => {
-    res.status(201).json({
-      message: 'user updated with success',
-      account: user.account
-    })
-  })
+  )
 }
 
-function removeFromUser(userId, data, res) {
+async function removeFromUser(userId, data, res, next) {
   const name = Object.keys(data)[0]
   const dataToRemove = data[name]
-  User.findByIdAndUpdate(
+  return User.findByIdAndUpdate(
     { _id: userId },
     { $pullAll: { [`account.${name}`]: dataToRemove } },
     { new: true }
-  ).then(user => {
-    res.status(201).json({
-      message: 'user updated with success',
-      account: user.account
-    })
-  })
+  )
 }
