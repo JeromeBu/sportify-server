@@ -9,3 +9,9 @@ exports.emptyDb = async () => {
   await Session.remove({})
   await User.remove({})
 }
+
+exports.emptyDbExceptUsers = async () => {
+  await Center.remove({})
+  await Activity.remove({})
+  await Session.remove({})
+}
