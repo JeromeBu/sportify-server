@@ -4,14 +4,17 @@ const chalk = require('chalk')
 
 exports.index = (req, res, next) => {
   const today = new Date()
-  const longitude = req.query.long ? parseFloat(req.query.long) : 0
-  const latitude = req.query.lat ? parseFloat(req.query.lat) : 0
+
+  console.log('long', req.query.long, 'lat', req.query.lat)
 
   Activity.aggregate([
     // Filter first
     {
       $geoNear: {
-        near: { type: 'Point', coordinates: [longitude, latitude] },
+        near: {
+          type: 'Point',
+          coordinates: [parseFloat(req.query.long), parseFloat(req.query.lat)]
+        },
         distanceField: 'distance',
         spherical: true
       }
@@ -196,7 +199,6 @@ exports.show = (req, res, next) => {
   ])
     .then(body => {
       const activity = body[0]
-      console.log('activity : ', activity)
       if (!activity)
         return res.status(404).json({ error: 'activity not found' })
       return res.json(activity)
