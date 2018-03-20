@@ -9,7 +9,10 @@ exports.index = (req, res, next) => {
     // Filter first
     {
       $geoNear: {
-        near: { type: 'Point', coordinates: [2.36051359999999, 48.8737157] },
+        near: {
+          type: 'Point',
+          coordinates: [parseFloat(req.query.long), parseFloat(req.query.lat)]
+        },
         distanceField: 'distance',
         spherical: true
       }
@@ -194,7 +197,10 @@ exports.show = (req, res, next) => {
   ])
     .then(body => {
       const activity = body[0]
+<<<<<<< HEAD
       console.log('session exemple :', activity.sessions[0])
+=======
+>>>>>>> abaa3e2487606ec7f74d6c88ba0a50df19ec2b86
       if (!activity)
         return res.status(404).json({ error: 'activity not found' })
       return res.json(activity)
