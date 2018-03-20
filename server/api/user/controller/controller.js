@@ -57,6 +57,7 @@ exports.update = (req, res, next) => {
 // dataToAdd: { sessions: sessions }
 // dataToRemove: { favoriteActivities: favoriteActivities }
 exports.updateImproved = (req, res, next) => {
+  console.log('in update improved')
   const userId = req.params.id
   const { dataToAdd, dataToRemove } = req.body
   if (dataToAdd) return addToUser(userId, dataToAdd, res, next)
