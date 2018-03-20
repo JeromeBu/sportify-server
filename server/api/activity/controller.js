@@ -5,8 +5,6 @@ const chalk = require('chalk')
 exports.index = (req, res, next) => {
   const today = new Date()
 
-  console.log('long', req.query.long, 'lat', req.query.lat)
-
   Activity.aggregate([
     // Filter first
     {
