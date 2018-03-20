@@ -10,7 +10,7 @@ const chaiHttp = require('chai-http')
 
 chai.use(chaiHttp)
 
-describe.only('TESTING ACTIVITIES ROUTES', () => {
+describe('TESTING ACTIVITIES ROUTES', () => {
   beforeEach(done => {
     Center.remove({}, () => Activity.remove({}, () => done()))
   })
@@ -44,7 +44,7 @@ describe.only('TESTING ACTIVITIES ROUTES', () => {
       .catch(e => console.log(e))
   })
 
-  it.only('should GET one activity  without error', done => {
+  it('should GET one activity  without error', done => {
     factory
       .activity({})
       .then(activity => {

@@ -44,11 +44,55 @@ exports.update = (req, res, next) => {
           res.status(400)
           return next(err)
         }
-        return res.status(204).json({ message: 'User updated' })
+        return res.status(201).json({ message: 'User updated' })
       })
     })
     .catch(err => {
       res.status(503)
       return next(err.message)
     })
+}
+
+// dans le body on attends les données à mettre à jour de la façon suivante :
+// dataToAdd: { sessions: this.sessions }
+// dataToRemove: { favoriteActivities: this.favoriteActivities }
+exports.updateImproved = (req, res, next) => {
+  const userId = req.params.id
+  const { dataToAdd, dataToRemove } = req.body
+  if (dataToAdd) return addToUser(userId, dataToAdd, res)
+  if (dataToRemove) return removeFromUser(userId, dataToRemove, res)
+  res.status(400).json({
+    error:
+      'your request has not been handled...dataToAdd or dataToRemove needed'
+  })
+}
+
+function addToUser(userId, data, res) {
+  const name = Object.keys(data)[0]
+  const dataToAdd = data[name]
+  User.findByIdAndUpdate(
+    { _id: userId },
+    { $push: { [`account.${name}`]: { $each: dataToAdd } } },
+    { new: true }
+  ).then(user => {
+    res.status(201).json({
+      message: 'user updated with success',
+      account: user.account
+    })
+  })
+}
+
+function removeFromUser(userId, data, res) {
+  const name = Object.keys(data)[0]
+  const dataToRemove = data[name]
+  User.findByIdAndUpdate(
+    { _id: userId },
+    { $pullAll: { [`account.${name}`]: dataToRemove } },
+    { new: true }
+  ).then(user => {
+    res.status(201).json({
+      message: 'user updated with success',
+      account: user.account
+    })
+  })
 }

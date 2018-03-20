@@ -145,7 +145,11 @@ function createSession(options = {}) {
       duration:
         options.duration || randomFromTable([45, 60, 90, 120, 150, 180]),
       capacity: options.capacity || Math.floor(6 + Math.random() * 15),
-      activity: options.activity || (await createActivity()),
+      activity:
+        options.activity ||
+        (await createActivity(
+          options.center ? { center: options.center } : {}
+        )),
       teacher: options.teacher || (await createUser({ role: 'teacher' })),
       bookedBy: options.bookedBy || [],
       peoplePresent: options.peoplePresent || []
