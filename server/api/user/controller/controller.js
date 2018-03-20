@@ -1,6 +1,7 @@
-const User = require('./model')
-const Activity = require('../activity/model')
-const Center = require('../center/model')
+const User = require('../model')
+const Activity = require('../../activity/model')
+const Center = require('../../center/model')
+const { addToUser, removeFromUser } = require('./utils')
 
 exports.show = (req, res, next) => {
   // const { currentUser } = req   value available when user logged (middlware)
@@ -26,7 +27,6 @@ exports.show = (req, res, next) => {
       })
     })
     .catch(err => {
-      console.log('error when getting user')
       res.status(503)
       return next(err.message)
     })
@@ -44,11 +44,26 @@ exports.update = (req, res, next) => {
           res.status(400)
           return next(err)
         }
-        return res.status(204).json({ message: 'User updated' })
+        return res.status(201).json({ message: 'User updated' })
       })
     })
     .catch(err => {
       res.status(503)
       return next(err.message)
     })
+}
+
+// dans le body on attends les données à mettre à jour de la façon suivante :
+// dataToAdd: { sessions: sessions }
+// dataToRemove: { favoriteActivities: favoriteActivities }
+exports.updateImproved = (req, res, next) => {
+  console.log('in update improved')
+  const userId = req.params.id
+  const { dataToAdd, dataToRemove } = req.body
+  if (dataToAdd) return addToUser(userId, dataToAdd, res, next)
+  if (dataToRemove) return removeFromUser(userId, dataToRemove, res, next)
+  return res.status(400).json({
+    error:
+      'your request has not been handled...dataToAdd or dataToRemove needed'
+  })
 }

@@ -24,7 +24,7 @@ exports.checkLoggedIn = (req, res, next) => {
     }
     if (!user) return res.status(401).json({ error: 'Unauthorized' })
 
-    req.currentUser = user
+    req.currentUserId = user.id
     return next()
   })(req, res, next)
 }
