@@ -69,6 +69,30 @@ const removeFromUser = async (userId, dataToRemove, res, next) => {
   })
 }
 
+const replaceFavoritesInUser = async (userId, dataToReplace, res, next) => {
+  console.log('In replace favorites')
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      { _id: userId },
+      {
+        'account.favoriteActivities': dataToReplace.favoriteActivities
+      },
+      { new: true }
+    )
+    if (!updatedUser)
+      return res.status(404).json({
+        error: 'no User found with that id'
+      })
+    return res.status(201).json({
+      message: 'user updated with success',
+      user: { account: updatedUser.account }
+    })
+  } catch (error) {
+    res.status(503)
+    return next(error.message)
+  }
+}
+
 async function addUserToSessions(userId, dataToAdd, res, next) {
   // dataToAdd = { sessions: [id_des_sessions]}
   const afterAddSessions = []
@@ -119,4 +143,9 @@ async function removeFromUserDbQuery(userId, data) {
   )
 }
 
-module.exports = { addToUser, removeFromUser, addToUserDbQuery }
+module.exports = {
+  addToUser,
+  removeFromUser,
+  addToUserDbQuery,
+  replaceFavoritesInUser
+}

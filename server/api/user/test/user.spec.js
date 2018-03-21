@@ -87,6 +87,7 @@ describe.only('User routes', () => {
       await emptyDb()
       // create a user and some sessions and activities
       this.user = await factory.user({ email: 'lulu@mail.com' })
+
       const teacher = await factory.user({ role: 'teacher' })
       const center = await factory.center({})
       this.sessions = []
@@ -111,34 +112,34 @@ describe.only('User routes', () => {
           done()
         })
     })
-    // it('Returns error if userId is wrong format', done => {
-    //   chai
-    //     .request(server)
-    //     .put(`/api/users/${this.user.id}error`)
-    //     .set('Authorization', `Bearer ${this.user.token}`)
-    //     .set('Content-Type', 'application/json')
-    //     .send({ dataToAdd: { sessions: this.sessions } })
-    //     .end((err, res) => {
-    //       res.should.have.status(503)
-    //       res.should.be.a('object')
-    //       res.body.should.have.property('error')
-    //       done()
-    //     })
-    // })
-    // it('Returns error if user do not exist', done => {
-    //   chai
-    //     .request(server)
-    //     .put('/api/users/5ab0ec1621e92041c84aa80f')
-    //     .set('Authorization', `Bearer ${this.user.token}`)
-    //     .set('Content-Type', 'application/json')
-    //     .send({ dataToAdd: { sessions: this.sessions } })
-    //     .end((err, res) => {
-    //       res.should.have.status(404)
-    //       res.should.be.a('object')
-    //       res.body.should.have.property('error')
-    //       done()
-    //     })
-    // })
+    it('Returns error if userId is wrong format', done => {
+      chai
+        .request(server)
+        .put(`/api/users/${this.user.id}error`)
+        .set('Authorization', `Bearer ${this.user.token}`)
+        .set('Content-Type', 'application/json')
+        .send({ dataToAdd: { sessions: this.sessions } })
+        .end((err, res) => {
+          res.should.have.status(503)
+          res.should.be.a('object')
+          res.body.should.have.property('error')
+          done()
+        })
+    })
+    it('Returns error if user do not exist', done => {
+      chai
+        .request(server)
+        .put('/api/users/5ab0ec1621e92041c84aa80f')
+        .set('Authorization', `Bearer ${this.user.token}`)
+        .set('Content-Type', 'application/json')
+        .send({ dataToAdd: { sessions: this.sessions } })
+        .end((err, res) => {
+          res.should.have.status(404)
+          res.should.be.a('object')
+          res.body.should.have.property('error')
+          done()
+        })
+    })
     it('Add Sessions to the User and the User to the Session', done => {
       chai
         .request(server)

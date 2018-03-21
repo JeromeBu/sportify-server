@@ -1,7 +1,7 @@
 const User = require('../model')
 const Activity = require('../../activity/model')
 const Center = require('../../center/model')
-const { addToUser, removeFromUser } = require('./utils')
+const { addToUser, removeFromUser, replaceFavoritesInUser } = require('./utils')
 
 exports.show = (req, res, next) => {
   // const { currentUser } = req   value available when user logged (middlware)
@@ -37,9 +37,12 @@ exports.show = (req, res, next) => {
 // dataToRemove: { favoriteActivities: favoriteActivities }
 exports.update = (req, res, next) => {
   const userId = req.params.id
-  const { dataToAdd, dataToRemove } = req.body
+  const { dataToAdd, dataToRemove, dataToReplace } = req.body
+  // dataToReplace: { favoriteActivities: res }
   if (dataToAdd) return addToUser(userId, dataToAdd, res, next)
   if (dataToRemove) return removeFromUser(userId, dataToRemove, res, next)
+  if (dataToReplace)
+    return replaceFavoritesInUser(userId, dataToReplace, res, next)
   return res.status(400).json({
     error:
       'your request has not been handled...dataToAdd or dataToRemove needed'
