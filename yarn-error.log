@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/Cellar/node/9.3.0_1/bin/node /usr/local/bin/yarn run test --exit
+  /usr/local/Cellar/node/9.3.0_1/bin/node /usr/local/bin/yarn test --exit
 
 PATH: 
   /Users/jerome/Library/Android/sdk/tools/bin:/Users/jerome/Library/Android/sdk/tools:/Users/jerome/Library/Android/sdk/platform-tools:./bin:./node_modules/.bin:/Users/jerome/.rbenv/shims:/Users/jerome/.rbenv/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/jerome/Library/Android/sdk/tools/bin:/Users/jerome/Library/Android/sdk/tools:/Users/jerome/Library/Android/sdk/platform-tools:./bin:./node_modules/.bin:/Users/jerome/.rbenv/shims:/Users/jerome/.rbenv/bin:/usr/local/sbin:/usr/local/sbin
@@ -4435,7 +4435,7 @@ Lockfile:
 
 Trace: 
   Error: Command failed.
-  Exit code: 1
+  Exit code: 2
   Command: sh
   Arguments: -c NODE_ENV=test mocha --recursive **/**.spec.js --exit
   Directory: /Users/jerome/code/JeromeBu/Sportify/sportify-server

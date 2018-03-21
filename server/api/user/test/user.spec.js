@@ -87,21 +87,16 @@ describe.only('User routes', () => {
       await emptyDb()
       // create a user and some sessions and activities
       this.user = await factory.user({ email: 'lulu@mail.com' })
-      console.log('user from factory : \n', this.user.id)
       const teacher = await factory.user({ role: 'teacher' })
-      console.log('teacher from factory : \n', teacher.id)
       const center = await factory.center({})
       this.sessions = []
-      this.fullSessions = []
       this.favoriteActivities = []
       for (let i = 0; i < 3; i++) {
         const activity = await factory.activity({ center })
         const session = await factory.session({ center, teacher, activity })
-        this.fullSessions.push(session.bookedBy)
         this.sessions.push(session.id)
         this.favoriteActivities.push(activity.id)
       }
-      console.log('sessions from factory : \n', this.fullSessions, '\n')
     })
     it('Returns unauthorized if wrong token', done => {
       chai

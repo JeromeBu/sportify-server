@@ -6,56 +6,67 @@ const {
 } = require('../../session/controller/utils')
 
 const addToUser = async (userId, dataToAdd, res, next) => {
+  let updatedUser = null
+  try {
+    updatedUser = await addToUserDbQuery(userId, dataToAdd)
+  } catch (error) {
+    res.status(503)
+    return next(error.message)
+  }
+  if (!updatedUser)
+    return res.status(404).json({
+      error: 'no User found with that id'
+    })
+
   const key = Object.keys(dataToAdd)[0]
   let updatedSessions = []
   if (key === 'sessions') {
     try {
       updatedSessions = await addUserToSessions(userId, dataToAdd, res, next)
-      console.log('updated Sessions BookedBy :\n', updatedSessions[0].bookedBy)
     } catch (error) {
-      console.log('promise error :', error.message)
+      res.status(503)
+      return next(error.message)
     }
   }
-  handlePromise(addToUserDbQuery(userId, dataToAdd), updatedSessions, res, next)
+  return res.status(201).json({
+    message: 'user updated with success',
+    user: { account: updatedUser.account },
+    updatedSessions
+  })
 }
 
 const removeFromUser = async (userId, dataToRemove, res, next) => {
+  let updatedUser = null
+  try {
+    updatedUser = await removeFromUserDbQuery(userId, dataToRemove)
+  } catch (error) {
+    res.status(503)
+    return next(error.message)
+  }
+  if (!updatedUser)
+    return res.status(404).json({
+      error: 'no User found with that id'
+    })
   const key = Object.keys(dataToRemove)[0]
   let updatedSessions = []
   if (key === 'sessions') {
-    updatedSessions = await removeUserFromSessions(
-      userId,
-      dataToRemove,
-      res,
-      next
-    )
-  }
-
-  handlePromise(
-    removeFromUserDbQuery(userId, dataToRemove),
-    updatedSessions,
-    res,
-    next
-  )
-}
-
-function handlePromise(promise, updatedSessions, res, next) {
-  promise
-    .then(user => {
-      if (!user)
-        return res.status(404).json({
-          error: 'no User found with that id'
-        })
-      return res.status(201).json({
-        message: 'user updated with success',
-        user: { account: user.account },
-        updatedSessions
-      })
-    })
-    .catch(err => {
+    try {
+      updatedSessions = await removeUserFromSessions(
+        userId,
+        dataToRemove,
+        res,
+        next
+      )
+    } catch (error) {
       res.status(503)
-      return next(err.message)
-    })
+      return next(error.message)
+    }
+  }
+  return res.status(201).json({
+    message: 'user updated with success',
+    user: { account: updatedUser.account },
+    updatedSessions
+  })
 }
 
 async function addUserToSessions(userId, dataToAdd, res, next) {
