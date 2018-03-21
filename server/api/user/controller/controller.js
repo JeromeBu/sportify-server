@@ -32,32 +32,10 @@ exports.show = (req, res, next) => {
     })
 }
 
-exports.update = (req, res, next) => {
-  const { account } = req.body
-  account.role = 'user'
-  User.findById(req.params.id)
-    .exec()
-    .then(user => {
-      user.account = account
-      user.save(err => {
-        if (err) {
-          res.status(400)
-          return next(err)
-        }
-        return res.status(201).json({ message: 'User updated' })
-      })
-    })
-    .catch(err => {
-      res.status(503)
-      return next(err.message)
-    })
-}
-
 // dans le body on attends les données à mettre à jour de la façon suivante :
 // dataToAdd: { sessions: sessions }
 // dataToRemove: { favoriteActivities: favoriteActivities }
-exports.updateImproved = (req, res, next) => {
-  console.log('in update improved')
+exports.update = (req, res, next) => {
   const userId = req.params.id
   const { dataToAdd, dataToRemove } = req.body
   if (dataToAdd) return addToUser(userId, dataToAdd, res, next)

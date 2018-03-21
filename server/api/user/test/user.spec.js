@@ -82,7 +82,7 @@ describe.only('User routes', () => {
     })
   })
 
-  describe('POST /api/users/improved/:id', function() {
+  describe('PUT /api/users/:id', function() {
     before(async () => {
       await emptyDb()
       // create a user and some sessions and activities
@@ -101,7 +101,7 @@ describe.only('User routes', () => {
     it('Returns unauthorized if wrong token', done => {
       chai
         .request(server)
-        .post(`/api/users/improved/${this.user.id}`)
+        .put(`/api/users/${this.user.id}`)
         .set('Authorization', 'Bearer wrongToken')
         .set('Content-Type', 'application/json')
         .end((err, res) => {
@@ -114,7 +114,7 @@ describe.only('User routes', () => {
     it('Returns error if userId is wrong format', done => {
       chai
         .request(server)
-        .post(`/api/users/improved/${this.user.id}error`)
+        .put(`/api/users/${this.user.id}error`)
         .set('Authorization', `Bearer ${this.user.token}`)
         .set('Content-Type', 'application/json')
         .send({ dataToAdd: { sessions: this.sessions } })
@@ -128,7 +128,7 @@ describe.only('User routes', () => {
     it('Returns error if user do not exist', done => {
       chai
         .request(server)
-        .post('/api/users/improved/5ab0ec1621e92041c84aa80f')
+        .put('/api/users/5ab0ec1621e92041c84aa80f')
         .set('Authorization', `Bearer ${this.user.token}`)
         .set('Content-Type', 'application/json')
         .send({ dataToAdd: { sessions: this.sessions } })
@@ -142,7 +142,7 @@ describe.only('User routes', () => {
     it('Add Sessions to the user', done => {
       chai
         .request(server)
-        .post(`/api/users/improved/${this.user.id}`)
+        .put(`/api/users/${this.user.id}`)
         .set('Authorization', `Bearer ${this.user.token}`)
         .set('Content-Type', 'application/json')
         .send({ dataToAdd: { sessions: this.sessions } })
@@ -164,7 +164,7 @@ describe.only('User routes', () => {
     it('Add favoriteActivities to the user', done => {
       chai
         .request(server)
-        .post(`/api/users/improved/${this.user.id}`)
+        .put(`/api/users/${this.user.id}`)
         .set('Authorization', `Bearer ${this.user.token}`)
         .set('Content-Type', 'application/json')
         .send({ dataToAdd: { favoriteActivities: this.favoriteActivities } })
@@ -186,7 +186,7 @@ describe.only('User routes', () => {
     it('Remove sessions from the user', done => {
       chai
         .request(server)
-        .post(`/api/users/improved/${this.user.id}`)
+        .put(`/api/users/${this.user.id}`)
         .set('Authorization', `Bearer ${this.user.token}`)
         .set('Content-Type', 'application/json')
         .send({
@@ -211,7 +211,7 @@ describe.only('User routes', () => {
     it('Remove favoriteActivity from the user', done => {
       chai
         .request(server)
-        .post(`/api/users/improved/${this.user.id}`)
+        .put(`/api/users/${this.user.id}`)
         .set('Authorization', `Bearer ${this.user.token}`)
         .set('Content-Type', 'application/json')
         .send({
