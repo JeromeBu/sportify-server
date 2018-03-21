@@ -15,4 +15,8 @@ function roundMinutes(date) {
   return date
 }
 
-module.exports = { randomFromTable, randomDate, roundMinutes }
+function pluck(array, key) {
+  return array.map(element => element[key])
+}
+
+module.exports = { randomFromTable, randomDate, roundMinutes, pluck }
