@@ -4,7 +4,6 @@ const User = require('../api/user/model')
 const Center = require('../api/center/model')
 const Activity = require('../api/activity/model')
 const Session = require('../api/session/model')
-const chalk = require('chalk')
 const factory = require('./modelFactory')
 const { randomFromTable } = require('./utilsFunctions')
 
@@ -61,6 +60,16 @@ const seed = async () => {
       password: 'azer'
     })
   )
+
+  users.push(
+    await factory.user({
+      shortId: 26,
+      email: 'teacher@mail.com',
+      password: 'azer',
+      role: 'teacher'
+    })
+  )
+
   console.log(
     `Short Id : ${users[initial - 1].shortId} - ${
       users[initial - 1].email
@@ -133,6 +142,20 @@ const seed = async () => {
     .then(async user => {
       console.log('in find one user : ', user.email)
       await Session.find({ shortId: { $in: [11, 21, 31] } })
+        .exec()
+        .then(async ses => {
+          console.log('in find Sessions : ', ses)
+          user.account.sessions = ses
+          await user.save()
+        })
+    })
+
+  console.log('put sessions inside teacher')
+  await User.findOne({ shortId: 26 })
+    .exec()
+    .then(async user => {
+      console.log('in find one user : ', user.email)
+      await Session.find({ shortId: { $in: [12, 22, 32] } })
         .exec()
         .then(async ses => {
           console.log('in find Sessions : ', ses)
