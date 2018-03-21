@@ -87,16 +87,21 @@ describe.only('User routes', () => {
       await emptyDb()
       // create a user and some sessions and activities
       this.user = await factory.user({ email: 'lulu@mail.com' })
+      console.log('user from factory : \n', this.user.id)
       const teacher = await factory.user({ role: 'teacher' })
+      console.log('teacher from factory : \n', teacher.id)
       const center = await factory.center({})
       this.sessions = []
+      this.fullSessions = []
       this.favoriteActivities = []
       for (let i = 0; i < 3; i++) {
         const activity = await factory.activity({ center })
-        const session = await factory.session({ center, teacher })
+        const session = await factory.session({ center, teacher, activity })
+        this.fullSessions.push(session.bookedBy)
         this.sessions.push(session.id)
         this.favoriteActivities.push(activity.id)
       }
+      console.log('sessions from factory : \n', this.fullSessions, '\n')
     })
     it('Returns unauthorized if wrong token', done => {
       chai
@@ -111,35 +116,35 @@ describe.only('User routes', () => {
           done()
         })
     })
-    it('Returns error if userId is wrong format', done => {
-      chai
-        .request(server)
-        .put(`/api/users/${this.user.id}error`)
-        .set('Authorization', `Bearer ${this.user.token}`)
-        .set('Content-Type', 'application/json')
-        .send({ dataToAdd: { sessions: this.sessions } })
-        .end((err, res) => {
-          res.should.have.status(503)
-          res.should.be.a('object')
-          res.body.should.have.property('error')
-          done()
-        })
-    })
-    it('Returns error if user do not exist', done => {
-      chai
-        .request(server)
-        .put('/api/users/5ab0ec1621e92041c84aa80f')
-        .set('Authorization', `Bearer ${this.user.token}`)
-        .set('Content-Type', 'application/json')
-        .send({ dataToAdd: { sessions: this.sessions } })
-        .end((err, res) => {
-          res.should.have.status(404)
-          res.should.be.a('object')
-          res.body.should.have.property('error')
-          done()
-        })
-    })
-    it('Add Sessions to the user', done => {
+    // it('Returns error if userId is wrong format', done => {
+    //   chai
+    //     .request(server)
+    //     .put(`/api/users/${this.user.id}error`)
+    //     .set('Authorization', `Bearer ${this.user.token}`)
+    //     .set('Content-Type', 'application/json')
+    //     .send({ dataToAdd: { sessions: this.sessions } })
+    //     .end((err, res) => {
+    //       res.should.have.status(503)
+    //       res.should.be.a('object')
+    //       res.body.should.have.property('error')
+    //       done()
+    //     })
+    // })
+    // it('Returns error if user do not exist', done => {
+    //   chai
+    //     .request(server)
+    //     .put('/api/users/5ab0ec1621e92041c84aa80f')
+    //     .set('Authorization', `Bearer ${this.user.token}`)
+    //     .set('Content-Type', 'application/json')
+    //     .send({ dataToAdd: { sessions: this.sessions } })
+    //     .end((err, res) => {
+    //       res.should.have.status(404)
+    //       res.should.be.a('object')
+    //       res.body.should.have.property('error')
+    //       done()
+    //     })
+    // })
+    it('Add Sessions to the User and the User to the Session', done => {
       chai
         .request(server)
         .put(`/api/users/${this.user.id}`)
@@ -153,11 +158,23 @@ describe.only('User routes', () => {
           res.body.should.have
             .property('message')
             .that.include('user updated with success')
-          res.body.should.have.property('account')
-          res.body.account.should.have
+          res.body.should.have.property('user')
+          res.body.user.should.have.property('account')
+          res.body.user.account.should.have
             .property('sessions')
             .which.is.an('array')
             .and.has.lengthOf(3)
+          res.body.should.have
+            .property('updatedSessions')
+            .which.is.an('array')
+            .with.lengthOf(3)
+          res.body.updatedSessions.forEach(session => {
+            session.should.have
+              .property('bookedBy')
+              .which.is.an('array')
+              .with.lengthOf(1)
+            session.bookedBy[0].should.equal(this.user.id)
+          })
           done()
         })
     })
@@ -175,15 +192,16 @@ describe.only('User routes', () => {
           res.body.should.have
             .property('message')
             .that.include('user updated with success')
-          res.body.should.have.property('account')
-          res.body.account.should.have
+          res.body.should.have.property('user')
+          res.body.user.should.have.property('account')
+          res.body.user.account.should.have
             .property('favoriteActivities')
             .which.is.an('array')
             .and.has.lengthOf(3)
           done()
         })
     })
-    it('Remove sessions from the user', done => {
+    it('Remove sessions from the user and the user from the session', done => {
       chai
         .request(server)
         .put(`/api/users/${this.user.id}`)
@@ -199,12 +217,24 @@ describe.only('User routes', () => {
           res.body.should.have
             .property('message')
             .that.include('user updated with success')
-          res.body.should.have.property('account')
-          res.body.account.should.have
+          res.body.should.have.property('user')
+          res.body.user.should.have.property('account')
+          res.body.user.account.should.have
             .property('sessions')
             .which.is.an('array')
-            .and.has.lengthOf(1)
-          res.body.account.sessions[0].should.equal(this.sessions[2])
+            .with.lengthOf(1)
+          res.body.user.account.sessions[0].should.equal(this.sessions[2])
+          res.body.should.have
+            .property('updatedSessions')
+            .which.is.an('array')
+            .with.lengthOf(2)
+          res.body.updatedSessions.forEach(session => {
+            session.should.have
+              .property('bookedBy')
+              .which.is.an('array')
+              .with.lengthOf(0)
+            // session.bookedBy[0].should.equal(this.user.id)
+          })
           done()
         })
     })
@@ -229,12 +259,13 @@ describe.only('User routes', () => {
           res.body.should.have
             .property('message')
             .that.include('user updated with success')
-          res.body.should.have.property('account')
-          res.body.account.should.have
+          res.body.should.have.property('user')
+          res.body.user.should.have.property('account')
+          res.body.user.account.should.have
             .property('favoriteActivities')
             .which.is.an('array')
             .and.has.lengthOf(1)
-          res.body.account.favoriteActivities[0].should.equal(
+          res.body.user.account.favoriteActivities[0].should.equal(
             this.favoriteActivities[0]
           )
           done()

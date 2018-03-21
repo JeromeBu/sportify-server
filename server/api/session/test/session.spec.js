@@ -47,7 +47,7 @@ describe('Sessions routes', () => {
     })
   })
 
-  describe.only('PUT /api/sessions/:id', function() {
+  describe('PUT /api/sessions/:id', function() {
     before(async () => {
       await emptyDb()
       this.teacher = await factory.user({ role: 'teacher' })
@@ -57,7 +57,7 @@ describe('Sessions routes', () => {
       await emptyDbExceptUsers()
       this.session = await factory.session({ teacher: this.teacher })
     })
-    it.only('Returns unauthorized if wrong token', done => {
+    it('Returns unauthorized if wrong token', done => {
       chai
         .request(server)
         .put(`/api/sessions/${this.session.id}`)
@@ -70,7 +70,7 @@ describe('Sessions routes', () => {
           done()
         })
     })
-    it.only('Returns unauthorized if user login and user to update are different', done => {
+    it('Returns unauthorized if user login and user to update are different', done => {
       chai
         .request(server)
         .put(`/api/sessions/${this.session.id}`)
@@ -84,7 +84,7 @@ describe('Sessions routes', () => {
           done()
         })
     })
-    it.only('update sessions with user and user with session', done => {
+    it('update sessions with user and user with session', done => {
       chai
         .request(server)
         .put(`/api/sessions/${this.session.id}`)
