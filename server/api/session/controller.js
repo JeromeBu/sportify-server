@@ -1,5 +1,5 @@
 const Session = require('./model')
-const User = require('../user/model')
+
 const { addToUserDbQuery } = require('../user/controller/utils')
 
 exports.index = (req, res, next) => {
@@ -15,13 +15,48 @@ exports.index = (req, res, next) => {
     })
 }
 
+exports.getTeacherSessions = (req, res, next) => {
+  const { id } = req.params
+  console.log('id', id)
+
+  Session.findById({ _id: id })
+    .populate({
+      path: 'activity',
+      select: 'image name',
+      populate: [
+        {
+          path: 'center',
+          select: 'address name'
+        }
+      ]
+    })
+    .populate({
+      path: 'bookedBy',
+      select: 'account.firstName account.lastName'
+    })
+    .populate({
+      path: 'peoplePresent',
+      select: 'account.firstName account.lastName'
+    })
+    .then(session => {
+      if (!session) return res.status(404).json({ error: 'Session not found' })
+      return res.json(session)
+    })
+    .catch(err => {
+      res.status(503)
+      return next(err.message)
+    })
+}
+
 // update array "bookedBy" from session and array "sessions" from user
 exports.update = (req, res, next) => {
   const { id } = req.params
   const { userId } = req.body
+
   if (req.currentUserId !== userId)
     return res.status(401).json({ error: 'Unauthorized' })
-  Session.findByIdAndUpdate(
+
+  return Session.findByIdAndUpdate(
     { _id: id },
     { $push: { bookedBy: userId } },
     { new: true }
@@ -40,6 +75,24 @@ exports.update = (req, res, next) => {
           res.status(503)
           return next(err.message)
         })
+    })
+    .catch(err => {
+      res.status(503)
+      return next(err.message)
+    })
+}
+
+exports.peoplePresent = (req, res, next) => {
+  const { id } = req.params
+  const { userId } = req.body
+
+  Session.findByIdAndUpdate(
+    { _id: id },
+    { $push: { peoplePresent: userId }, $pull: { bookedBy: userId } },
+    { new: true }
+  )
+    .then(session => {
+      res.json({ session })
     })
     .catch(err => {
       res.status(503)
