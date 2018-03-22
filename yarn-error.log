@@ -4435,7 +4435,7 @@ Lockfile:
 
 Trace: 
   Error: Command failed.
-  Exit code: 1
+  Exit code: 2
   Command: sh
   Arguments: -c node server/utils/seed.js
   Directory: /Users/kevin/Documents/LeReacteur/Sportify/sportify-server

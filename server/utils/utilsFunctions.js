@@ -22,4 +22,14 @@ function roundMinutes(date) {
   return date
 }
 
-module.exports = { corsicaRandom, randomFromTable, randomDate, roundMinutes }
+function pluck(array, key) {
+  return array.map(element => element[key])
+}
+
+module.exports = {
+  corsicaRandom,
+  randomFromTable,
+  randomDate,
+  roundMinutes,
+  pluck
+}

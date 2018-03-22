@@ -82,18 +82,19 @@ describe.only('User routes', () => {
     })
   })
 
-  describe('POST /api/users/improved/:id', function() {
+  describe('PUT /api/users/:id', function() {
     before(async () => {
       await emptyDb()
       // create a user and some sessions and activities
       this.user = await factory.user({ email: 'lulu@mail.com' })
+
       const teacher = await factory.user({ role: 'teacher' })
       const center = await factory.center({})
       this.sessions = []
       this.favoriteActivities = []
       for (let i = 0; i < 3; i++) {
         const activity = await factory.activity({ center })
-        const session = await factory.session({ center, teacher })
+        const session = await factory.session({ center, teacher, activity })
         this.sessions.push(session.id)
         this.favoriteActivities.push(activity.id)
       }
@@ -101,7 +102,7 @@ describe.only('User routes', () => {
     it('Returns unauthorized if wrong token', done => {
       chai
         .request(server)
-        .post(`/api/users/improved/${this.user.id}`)
+        .put(`/api/users/${this.user.id}`)
         .set('Authorization', 'Bearer wrongToken')
         .set('Content-Type', 'application/json')
         .end((err, res) => {
@@ -114,7 +115,7 @@ describe.only('User routes', () => {
     it('Returns error if userId is wrong format', done => {
       chai
         .request(server)
-        .post(`/api/users/improved/${this.user.id}error`)
+        .put(`/api/users/${this.user.id}error`)
         .set('Authorization', `Bearer ${this.user.token}`)
         .set('Content-Type', 'application/json')
         .send({ dataToAdd: { sessions: this.sessions } })
@@ -128,7 +129,7 @@ describe.only('User routes', () => {
     it('Returns error if user do not exist', done => {
       chai
         .request(server)
-        .post('/api/users/improved/5ab0ec1621e92041c84aa80f')
+        .put('/api/users/5ab0ec1621e92041c84aa80f')
         .set('Authorization', `Bearer ${this.user.token}`)
         .set('Content-Type', 'application/json')
         .send({ dataToAdd: { sessions: this.sessions } })
@@ -139,10 +140,10 @@ describe.only('User routes', () => {
           done()
         })
     })
-    it('Add Sessions to the user', done => {
+    it('Add Sessions to the User and the User to the Session', done => {
       chai
         .request(server)
-        .post(`/api/users/improved/${this.user.id}`)
+        .put(`/api/users/${this.user.id}`)
         .set('Authorization', `Bearer ${this.user.token}`)
         .set('Content-Type', 'application/json')
         .send({ dataToAdd: { sessions: this.sessions } })
@@ -153,18 +154,30 @@ describe.only('User routes', () => {
           res.body.should.have
             .property('message')
             .that.include('user updated with success')
-          res.body.should.have.property('account')
-          res.body.account.should.have
+          res.body.should.have.property('user')
+          res.body.user.should.have.property('account')
+          res.body.user.account.should.have
             .property('sessions')
             .which.is.an('array')
             .and.has.lengthOf(3)
+          res.body.should.have
+            .property('updatedSessions')
+            .which.is.an('array')
+            .with.lengthOf(3)
+          res.body.updatedSessions.forEach(session => {
+            session.should.have
+              .property('bookedBy')
+              .which.is.an('array')
+              .with.lengthOf(1)
+            session.bookedBy[0].should.equal(this.user.id)
+          })
           done()
         })
     })
     it('Add favoriteActivities to the user', done => {
       chai
         .request(server)
-        .post(`/api/users/improved/${this.user.id}`)
+        .put(`/api/users/${this.user.id}`)
         .set('Authorization', `Bearer ${this.user.token}`)
         .set('Content-Type', 'application/json')
         .send({ dataToAdd: { favoriteActivities: this.favoriteActivities } })
@@ -175,18 +188,19 @@ describe.only('User routes', () => {
           res.body.should.have
             .property('message')
             .that.include('user updated with success')
-          res.body.should.have.property('account')
-          res.body.account.should.have
+          res.body.should.have.property('user')
+          res.body.user.should.have.property('account')
+          res.body.user.account.should.have
             .property('favoriteActivities')
             .which.is.an('array')
             .and.has.lengthOf(3)
           done()
         })
     })
-    it('Remove sessions from the user', done => {
+    it('Remove sessions from the user and the user from the session', done => {
       chai
         .request(server)
-        .post(`/api/users/improved/${this.user.id}`)
+        .put(`/api/users/${this.user.id}`)
         .set('Authorization', `Bearer ${this.user.token}`)
         .set('Content-Type', 'application/json')
         .send({
@@ -199,19 +213,31 @@ describe.only('User routes', () => {
           res.body.should.have
             .property('message')
             .that.include('user updated with success')
-          res.body.should.have.property('account')
-          res.body.account.should.have
+          res.body.should.have.property('user')
+          res.body.user.should.have.property('account')
+          res.body.user.account.should.have
             .property('sessions')
             .which.is.an('array')
-            .and.has.lengthOf(1)
-          res.body.account.sessions[0].should.equal(this.sessions[2])
+            .with.lengthOf(1)
+          res.body.user.account.sessions[0].should.equal(this.sessions[2])
+          res.body.should.have
+            .property('updatedSessions')
+            .which.is.an('array')
+            .with.lengthOf(2)
+          res.body.updatedSessions.forEach(session => {
+            session.should.have
+              .property('bookedBy')
+              .which.is.an('array')
+              .with.lengthOf(0)
+            // session.bookedBy[0].should.equal(this.user.id)
+          })
           done()
         })
     })
     it('Remove favoriteActivity from the user', done => {
       chai
         .request(server)
-        .post(`/api/users/improved/${this.user.id}`)
+        .put(`/api/users/${this.user.id}`)
         .set('Authorization', `Bearer ${this.user.token}`)
         .set('Content-Type', 'application/json')
         .send({
@@ -229,12 +255,13 @@ describe.only('User routes', () => {
           res.body.should.have
             .property('message')
             .that.include('user updated with success')
-          res.body.should.have.property('account')
-          res.body.account.should.have
+          res.body.should.have.property('user')
+          res.body.user.should.have.property('account')
+          res.body.user.account.should.have
             .property('favoriteActivities')
             .which.is.an('array')
             .and.has.lengthOf(1)
-          res.body.account.favoriteActivities[0].should.equal(
+          res.body.user.account.favoriteActivities[0].should.equal(
             this.favoriteActivities[0]
           )
           done()
