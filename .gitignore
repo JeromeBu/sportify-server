@@ -4,3 +4,4 @@ data
 .env
 coverage
 .nyc_output
+.vscode

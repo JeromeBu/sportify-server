@@ -18,7 +18,7 @@ describe('Sessions routes', () => {
         .catch(e => log(e))
     })
 
-    it('should GET an array with one session without error', async done => {
+    it('should GET an array with one session without error', async () => {
       await factory.session({})
       chai
         .request(server)
@@ -41,8 +41,6 @@ describe('Sessions routes', () => {
               'teacher'
             )
           )
-
-          done()
         })
     })
   })
