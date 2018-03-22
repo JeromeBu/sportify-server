@@ -1,6 +1,7 @@
 const server = require('../../../../index')
 const Activity = require('../model')
 const Center = require('../../center/model')
+const Session = require('../../center/model')
 const factory = require('../../../utils/modelFactory')
 const chai = require('chai')
 const should = require('chai').should()
@@ -10,9 +11,11 @@ const chaiHttp = require('chai-http')
 
 chai.use(chaiHttp)
 
-describe('TESTING ACTIVITIES ROUTES', () => {
+describe.only('TESTING ACTIVITIES ROUTES', () => {
   beforeEach(done => {
-    Center.remove({}, () => Activity.remove({}, () => done()))
+    Center.remove({}, () =>
+      Activity.remove({}, () => Session.remove({}, done()))
+    )
   })
 
   it('should GET an array with one activity without error', done => {
@@ -21,7 +24,7 @@ describe('TESTING ACTIVITIES ROUTES', () => {
       .then(() => {
         chai
           .request(server)
-          .get('/api/activities')
+          .get('/api/activities?lat=0&long=0')
           .end((err, res) => {
             should.not.exist(err)
             res.body.should.be.an('array')
@@ -37,7 +40,6 @@ describe('TESTING ACTIVITIES ROUTES', () => {
                 'center'
               )
             )
-
             done()
           })
       })
@@ -45,14 +47,11 @@ describe('TESTING ACTIVITIES ROUTES', () => {
   })
 
   it('should GET one activity  without error', done => {
-    factory
-      .activity({})
-      .then(activity => {
-        console.log('after factory', factory)
-
+    factory.session({}).then(session => {
+      factory.activity({ sessions: [session] }).then(activity => {
         chai
           .request(server)
-          .get(`/api/activities/${activity._id}`)
+          .get(`/api/activities/${activity.id}`)
           .end((err, res) => {
             should.not.exist(err)
             res.should.have.status(200)
@@ -67,7 +66,7 @@ describe('TESTING ACTIVITIES ROUTES', () => {
               'sessions'
             )
 
-            res.body.sessions.every(i =>
+            res.body.sessions.forEach(i =>
               i.should.to.have.all.keys(
                 '_id',
                 'activity',
@@ -82,16 +81,14 @@ describe('TESTING ACTIVITIES ROUTES', () => {
 
             res.body.sessions[0].bookedBy.should.be.an('array')
             res.body.sessions[0].peoplePresent.should.be.an('array')
-
             res.body.sessions[0].teacher.should.have.keys(
               '_id',
               'firstName',
               'lastName'
             )
-
             done()
           })
       })
-      .catch(e => console.log(e))
+    })
   })
 })
