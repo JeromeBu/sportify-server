@@ -1,0 +1,31 @@
+[
+  {
+    "name": "Yoga",
+    "image": "https://greatist.com/sites/default/files/YogaLingo.jpg",
+    "loc": [2.333333, 48.866667]
+  },
+  {
+    "name": "TRX",
+    "image":
+      "https://www.esdo.fr/wp-content/uploads/2016/12/banniere_trx_suspension_training.jpg",
+    "loc": [2.333333, 48.866667]
+  },
+  {
+    "name": "Cardio",
+    "image":
+      "https://cdn-maf0.heartyhosting.com/sites/muscleandfitness.com/files/styles/full_node_image_1090x614/public/cardio-treadmill_1.jpg?itok=LTsMm6jA",
+    "loc": [2.333333, 48.866667]
+  },
+  {
+    "name": "Crossfit",
+    "image":
+      "https://www.shape.com/sites/shape.com/files/fb-crossfit-injuries.jpg",
+    "loc": [2.333333, 48.866667]
+  },
+  {
+    "name": "Musculation",
+    "image":
+      "https://claudiafittricksblog.files.wordpress.com/2017/04/peso_musculacao.jpg?w=640",
+    "loc": [2.333333, 48.866667]
+  }
+]

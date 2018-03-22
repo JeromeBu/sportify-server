@@ -5,14 +5,19 @@ const Center = require('../api/center/model')
 const Activity = require('../api/activity/model')
 const Session = require('../api/session/model')
 const factory = require('./modelFactory')
-const { randomFromTable } = require('./utilsFunctions')
+const { corsicaRandom } = require('./utilsFunctions')
 
-const models = [User, Center, Activity, Session]
+const seedUsers = require('./seedData/users.json')
+const seedTeachers = require('./seedData/teachers.json')
+const seedCenters = require('./seedData/centers.json')
+const seedActivities = require('./seedData/activities')
 
 mongoose.connect(config.MONGODB_URI, err => {
   if (err) console.error('Could not connect to mongodb.')
 })
 
+// Clean DB
+const models = [User, Center, Activity, Session]
 models.map(model => model.remove({}).exec())
 
 const users = []
@@ -21,81 +26,51 @@ const teachers = []
 const activities = []
 const sessions = []
 
-const centersName = [
-  'Belleville - Ménilmontant',
-  "Place D'Italie",
-  'Denfert - Alésia'
-]
-
 const seed = async () => {
-  console.log('Creating users...\n')
-  let i = null
-  for (i = 1; i < 8; i += 1) {
-    users.push(await factory.user({ shortId: i }))
-    console.log(`Short Id : ${users[i - 1].shortId} - ${users[i - 1].email}`)
+  console.log('\nCreating users...\n')
+  for (let i = 0; i < seedUsers.length; i++) {
+    users.push(await factory.user({ ...seedUsers[i], shortId: i + 1 }))
+    console.log(`Short Id : ${users[i].shortId} - ${users[i].email}`)
   }
 
   console.log('\nCreating teachers...\n')
-  const initial = i
-  for (i; i <= 11; i += 1) {
-    teachers.push(await factory.user({ shortId: i, role: 'teacher' }))
-    console.log(
-      `Short Id : ${teachers[i - initial].shortId} - ${
-        teachers[i - initial].email
-      }`
+  for (let i = 0; i < seedTeachers.length; i++) {
+    teachers.push(
+      await factory.user({
+        ...seedTeachers[i],
+        shortId: 101 + i,
+        role: 'teacher'
+      })
     )
+    console.log(`Short Id : ${teachers[i].shortId} - ${teachers[i].email}`)
   }
 
-  console.log('\nCreating specific users...\n')
-  await factory.user({
-    shortId: 30,
-    email: 'tessier@gmail.com',
-    password: '123456'
-  })
-
-  users.push(
-    await factory.user({
-      shortId: 25,
-      email: 'jerome@mail.com',
-      password: 'azer'
-    })
-  )
-
-  users.push(
-    await factory.user({
-      shortId: 26,
-      email: 'teacher@mail.com',
-      password: 'azer',
-      role: 'teacher'
-    })
-  )
-
-  console.log(
-    `Short Id : ${users[initial - 1].shortId} - ${
-      users[initial - 1].email
-    } - Password: ${users[initial - 1].password}`
-  )
-
   console.log('\nCreating centers...\n')
-  for (let j = 1; j <= 3; j += 1) {
-    centers.push(await factory.center({ shortId: j, name: centersName[j - 1] }))
-    console.log(`Short Id : ${centers[j - 1].shortId} - ${centers[j - 1].name}`)
+  for (let i = 0; i < seedCenters.length; i++) {
+    centers.push(await factory.center({ ...seedCenters[i], shortId: i + 1 }))
+    console.log(`Short Id : ${centers[i].shortId} - ${centers[i].name}`)
   }
 
   console.log('\nCreating activities...\n')
-  for (let j = 1; j <= centers.length; j += 1) {
-    const center = centers[j - 1]
-    const numActiv = 5
-    for (let k = 1; k <= numActiv; k += 1) {
-      activities.push(await factory.activity({ shortId: j * 10 + k, center }))
+  for (let i = 0; i < centers.length; i++) {
+    const center = centers[i]
+    const numActivities = seedActivities.length
+    for (let j = 0; j < numActivities; j++) {
+      activities.push(
+        await factory.activity({
+          ...seedActivities[j],
+          shortId: (i + 1) * 10 + j + 1,
+          center: centers[i]._id
+        })
+      )
       console.log(
-        `Short Id : ${activities[(j - 1) * numActiv + (k - 1)].shortId} - ${
-          activities[(j - 1) * numActiv + (k - 1)].name
-        }`
+        `Short Id : ${activities[i * numActivities + j].shortId} - ${
+          activities[i * numActivities + j].name
+        } - ${center.name}`
       )
     }
-    const min = j * 10
-    const max = (j + 1) * 10
+    const min = i * 10
+    const max = (i + 1) * 10
     await Activity.find({ shortId: { $gt: min, $lt: max } }).exec(
       (err, activ) => {
         center.activities = activ
@@ -106,27 +81,28 @@ const seed = async () => {
     )
   }
 
+  // corsicaRandom() will link sessions who ends by 1 (ie 11, 21, ...) to first teacher
   console.log('\nCreating sessions...')
-  for (let l = 1; l <= activities.length; l += 1) {
-    const activity = activities[l - 1]
-    const numSession = 6
-    for (let k = 1; k <= numSession; k++) {
+  for (let i = 0; i < activities.length; i++) {
+    const activity = activities[i]
+    const numSession = 5
+    for (let j = 0; j < numSession; j++) {
       sessions.push(
         await factory.session({
-          shortId: l * 10 + k,
+          shortId: (i + 1) * 10 + j + 1,
           activity,
-          teacher: randomFromTable(teachers)
+          teacher: corsicaRandom(teachers)
         })
       )
       console.log(
-        `Short Id : ${sessions[(l - 1) * numSession + k - 1].shortId} - ${
-          sessions[(l - 1) * numSession + k - 1].startsAt
+        `Short Id : ${sessions[i * numSession + j].shortId} - ${
+          sessions[i * numSession + j].startsAt
         }`
       )
     }
 
-    const min = l * 10
-    const max = (l + 1) * 10
+    const min = i * 10
+    const max = (i + 1) * 10
     await Session.find({ shortId: { $gt: min, $lt: max } }).exec(
       (err, sess) => {
         activity.sessions = sess
@@ -137,28 +113,46 @@ const seed = async () => {
     )
   }
 
-  await User.findOne({ shortId: 25 })
+  console.log('Link users to sessions...')
+  await Session.find({ shortId: { $in: [11, 21, 31] } })
     .exec()
-    .then(async user => {
-      console.log('in find one user : ', user.email)
-      await Session.find({ shortId: { $in: [11, 21, 31] } })
-        .exec()
-        .then(async ses => {
-          console.log('in find Sessions : ', ses)
-          user.account.sessions = ses
-          await user.save()
+    .then(async ses => {
+      await User.updateMany(
+        { 'account.role': 'user' },
+        { $set: { 'account.sessions': ses } }
+      )
+        .then(res => {
+          console.log(`Users modified: ${res.nModified}/${res.n}`)
+        })
+        .catch(err => {
+          console.error(err)
         })
     })
 
-  console.log('put sessions inside teacher')
-  await User.findOne({ shortId: 26 })
+  console.log('Link sessions to users')
+  await User.find({ 'account.role': 'user' })
+    .exec()
+    .then(async use => {
+      await Session.updateMany(
+        { shortId: { $in: [11, 21, 31] } },
+        { $set: { bookedBy: use } }
+      )
+        .then(res => {
+          console.log(`Sessions modified: ${res.nModified}/${res.n}`)
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    })
+
+  console.log('Link some sessions to teacher n°1')
+  await User.findOne({ shortId: 101 })
     .exec()
     .then(async user => {
-      console.log('in find one user : ', user.email)
-      await Session.find({ shortId: { $in: [12, 22, 32] } })
+      console.log("Teacher's email: ", user.email)
+      await Session.find({ shortId: { $in: [11, 21, 31, 41, 51] } })
         .exec()
         .then(async ses => {
-          console.log('in find Sessions : ', ses)
           user.account.sessions = ses
           await user.save()
         })

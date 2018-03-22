@@ -1,4 +1,11 @@
-const randomFromTable = array => array[Math.floor(Math.random() * array.length)]
+function corsicaRandom(array, i) {
+  if (i === 0) return array[0]
+  return array[Math.floor(Math.random() * (array.length - 1) + 1)]
+}
+
+function randomFromTable(array) {
+  return array[Math.floor(Math.random() * array.length)]
+}
 
 function randomDate(start, end, startHour, endHour) {
   const date = new Date(+start + Math.random() * (end - start))
@@ -15,4 +22,4 @@ function roundMinutes(date) {
   return date
 }
 
-module.exports = { randomFromTable, randomDate, roundMinutes }
+module.exports = { corsicaRandom, randomFromTable, randomDate, roundMinutes }
