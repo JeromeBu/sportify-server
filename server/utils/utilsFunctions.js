@@ -1,5 +1,8 @@
 function corsicaRandom(array, i) {
-  if (i === 0) return array[0]
+  if (i === 0) {
+    console.log('link to teacher n°1')
+    return array[0]
+  }
   return array[Math.floor(Math.random() * (array.length - 1) + 1)]
 }
 

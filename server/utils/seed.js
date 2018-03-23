@@ -91,7 +91,7 @@ const seed = async () => {
         await factory.session({
           shortId: (i + 1) * 10 + j + 1,
           activity,
-          teacher: corsicaRandom(teachers)
+          teacher: corsicaRandom(teachers, j)
         })
       )
       console.log(
@@ -113,7 +113,7 @@ const seed = async () => {
     )
   }
 
-  console.log('Link users to sessions...')
+  console.log('Linking users to sessions...')
   await Session.find({ shortId: { $in: [11, 21, 31] } })
     .exec()
     .then(async ses => {
@@ -129,7 +129,7 @@ const seed = async () => {
         })
     })
 
-  console.log('Link sessions to users')
+  console.log('Linking sessions to users...')
   await User.find({ 'account.role': 'user' })
     .exec()
     .then(async use => {
@@ -145,18 +145,22 @@ const seed = async () => {
         })
     })
 
-  console.log('Link some sessions to teacher n°1')
-  await User.findOne({ shortId: 101 })
-    .exec()
-    .then(async user => {
-      console.log("Teacher's email: ", user.email)
-      await Session.find({ shortId: { $in: [11, 21, 31, 41, 51] } })
-        .exec()
-        .then(async ses => {
-          user.account.sessions = ses
-          await user.save()
-        })
-    })
+  console.log('Linking sessions to teachers')
+  for (var i = 0; i < teachers.length; i++) {
+    await User.findOne({ _id: teachers[i]._id })
+      .exec()
+      .then(async user => {
+        await Session.find({ teacher: user._id })
+          .exec()
+          .then(async ses => {
+            user.account.sessions = ses
+            await user.save()
+            console.log(
+              `${ses.length} sessions link to teacher : ${user.email}`
+            )
+          })
+      })
+  }
 
   console.log(
     `\n \nCreated ${users.length} users, ${teachers.length} teachers, ${
