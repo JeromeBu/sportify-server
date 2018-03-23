@@ -40,19 +40,13 @@ exports.index = (req, res, next) => {
         image: 1,
         distance: 1,
         centers_docs: 1,
-        // on filtre le nouvelle array sessions_docs
-        sessions_docs: {
-          $filter: {
-            input: '$sessions_docs',
-            as: 'date', // kind of element of an iteration
-            cond: {
-              $gte: ['$$date.startsAt', today.toISOString()]
-            }
-          }
-        }
+        sessions_docs: 1
       }
     },
     { $unwind: '$sessions_docs' },
+    {
+      $match: { 'sessions_docs.startsAt': { $gte: today } } // on ne veut que des sessions actuelles
+    },
     { $unwind: '$centers_docs' },
     { $sort: { 'sessions_docs.startsAt': 1 } },
     {
@@ -103,6 +97,9 @@ exports.show = (req, res, next) => {
     },
     {
       $unwind: '$sessions_docs' // on déconstruit l'array sessions_docs
+    },
+    {
+      $match: { 'sessions_docs.startsAt': { $gte: today } } // on ne veut que des sessions actuelles
     },
     { $sort: { 'sessions_docs.startsAt': 1 } }, // pour sortir les dates dans l'odre croissant
     {
@@ -174,7 +171,7 @@ exports.show = (req, res, next) => {
     },
     { $unwind: '$center' },
     {
-      //   // envoyer ce que l'on souhaite
+      // envoyer ce que l'on souhaite
       $project: {
         name: 1,
         image: 1,
@@ -182,16 +179,7 @@ exports.show = (req, res, next) => {
           name: 1,
           address: 1
         },
-        // on filtre le nouvel array sessions pour n'avoir que les sessions à actuelles
-        sessions: {
-          $filter: {
-            input: '$sessions',
-            as: 'date', // kind of element of an iteration
-            cond: {
-              $gte: ['$$date.startsAt', today.toISOString()]
-            }
-          }
-        }
+        sessions: 1
       }
     }
   ])
@@ -207,5 +195,3 @@ exports.show = (req, res, next) => {
       return next(err.message)
     })
 }
-
-// { month: { $month: "$date" }, day: { $dayOfMonth: "$date" }, year: { $year: "$date" } }
