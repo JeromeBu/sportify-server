@@ -1,4 +1,14 @@
-const randomFromTable = array => array[Math.floor(Math.random() * array.length)]
+function corsicaRandom(array, i) {
+  if (i === 0) {
+    console.log('link to teacher n°1')
+    return array[0]
+  }
+  return array[Math.floor(Math.random() * (array.length - 1) + 1)]
+}
+
+function randomFromTable(array) {
+  return array[Math.floor(Math.random() * array.length)]
+}
 
 function randomDate(start, end, startHour, endHour) {
   const date = new Date(+start + Math.random() * (end - start))
@@ -19,4 +29,10 @@ function pluck(array, key) {
   return array.map(element => element[key])
 }
 
-module.exports = { randomFromTable, randomDate, roundMinutes, pluck }
+module.exports = {
+  corsicaRandom,
+  randomFromTable,
+  randomDate,
+  roundMinutes,
+  pluck
+}
