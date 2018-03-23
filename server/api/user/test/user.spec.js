@@ -9,7 +9,7 @@ const chaiHttp = require('chai-http')
 
 chai.use(chaiHttp)
 
-describe.only('User routes', () => {
+describe('User routes', () => {
   describe('GET /api/users/:id', () => {
     beforeEach(done => {
       User.remove({}, () => {
