@@ -50,6 +50,24 @@ exports.peoplePresent = (req, res, next) => {
     { $push: { peoplePresent: userId }, $pull: { bookedBy: userId } },
     { new: true }
   )
+    .populate({
+      path: 'activity',
+      select: 'image name',
+      populate: [
+        {
+          path: 'center',
+          select: 'address name'
+        }
+      ]
+    })
+    .populate({
+      path: 'bookedBy',
+      select: 'account.firstName account.lastName'
+    })
+    .populate({
+      path: 'peoplePresent',
+      select: 'account.firstName account.lastName'
+    })
     .then(session => {
       res.json({ session })
     })
