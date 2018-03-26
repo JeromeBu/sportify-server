@@ -51,10 +51,12 @@ describe('Sessions routes', () => {
       this.teacher = await factory.user({ role: 'teacher' })
       this.user = await factory.user({})
     })
+
     beforeEach(async () => {
       await emptyDbExceptUsers()
       this.session = await factory.session({ teacher: this.teacher })
     })
+
     it('Returns unauthorized if wrong token', done => {
       chai
         .request(server)
@@ -111,6 +113,67 @@ describe('Sessions routes', () => {
             .which.is.an('array')
             .with.lengthOf(1)
           res.body.user.account.sessions[0].should.equal(this.session.id)
+
+          done()
+        })
+    })
+  })
+
+  describe('GET /api/sessions/:id', function() {
+    before(async () => {
+      await emptyDb()
+      this.teacher = await factory.user({ role: 'teacher' })
+    })
+
+    beforeEach(async () => {
+      await emptyDbExceptUsers()
+      this.session = await factory.session({ teacher: this.teacher })
+    })
+
+    it('should GET an object of session with one activity and the center of this activity without error', done => {
+      chai
+        .request(server)
+        .get(`/api/sessions/${this.session.id}`)
+        .end((err, res) => {
+          should.not.exist(err)
+          res.body.should.be.an('object')
+          res.should.have.status(200)
+
+          res.body.should.to.have.all.keys(
+            '__v',
+            'bookedBy',
+            'peoplePresent',
+            '_id',
+            'startsAt',
+            'duration',
+            'capacity',
+            'activity',
+            'teacher'
+          )
+          res.body.should.have
+            .property('bookedBy')
+            .which.is.an('array')
+            .with.lengthOf(0)
+
+          res.body.should.have
+            .property('peoplePresent')
+            .which.is.an('array')
+            .with.lengthOf(0)
+
+          res.body.activity.should.be.an('object')
+          res.body.activity.should.to.have.all.keys(
+            '_id',
+            'name',
+            'image',
+            'center'
+          )
+
+          res.body.activity.center.should.be.an('object')
+          res.body.activity.center.should.to.have.all.keys(
+            '_id',
+            'name',
+            'address'
+          )
 
           done()
         })
