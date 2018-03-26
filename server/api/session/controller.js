@@ -1,6 +1,8 @@
 const Session = require('./model')
-
+const chalk = require('chalk')
 const { addToUserDbQuery } = require('../user/controller/utils')
+
+const log = console.log
 
 exports.index = (req, res, next) => {
   Session.find({})
@@ -49,37 +51,44 @@ exports.getTeacherSessions = (req, res, next) => {
 }
 
 // update array "bookedBy" from session and array "sessions" from user
-exports.update = (req, res, next) => {
+exports.bookSession = (req, res, next) => {
   const { id } = req.params
   const { userId } = req.body
 
-  if (req.currentUserId !== userId)
-    return res.status(401).json({ error: 'Unauthorized' })
+  // if (req.currentUserId !== userId) {
+  //   return res.status(401).json({ error: 'Unauthorized' })
+  // }
 
-  return Session.findByIdAndUpdate(
-    { _id: id },
-    { $push: { bookedBy: userId } },
-    { new: true }
-  )
-    .then(session => {
-      const dataToAdd = { sessions: [id] }
-      addToUserDbQuery(userId, dataToAdd, res, next)
-        .then(user =>
-          res.status(201).json({
-            message: 'session and user updated with success',
-            session,
-            user: { id: user.id, account: user.account }
+  Session.findById({ _id: id }).then(session => {
+    // mongoose method to compare id string and id object
+    const isExist = session.bookedBy.some(usersBooked =>
+      usersBooked.equals(userId)
+    )
+
+    if (isExist) {
+      res.status(404).json({
+        message: 'you can not booked the same session'
+      })
+    } else {
+      log(chalk.red('userID is already in bookedBy'))
+      session.bookedBy.push(userId)
+      session.save().then(newSession => {
+        const dataToAdd = { sessions: [id] }
+        addToUserDbQuery(userId, dataToAdd, res, next)
+          .then(user =>
+            res.status(201).json({
+              message: 'session and user updated with success',
+              newSession,
+              user: { id: user.id, account: user.account }
+            })
+          )
+          .catch(err => {
+            res.status(503)
+            return next(err.message)
           })
-        )
-        .catch(err => {
-          res.status(503)
-          return next(err.message)
-        })
-    })
-    .catch(err => {
-      res.status(503)
-      return next(err.message)
-    })
+      })
+    }
+  })
 }
 
 exports.peoplePresent = (req, res, next) => {
