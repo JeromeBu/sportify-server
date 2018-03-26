@@ -177,7 +177,8 @@ exports.show = (req, res, next) => {
         image: 1,
         center: {
           name: 1,
-          address: 1
+          address: 1,
+          phone: 1
         },
         sessions: 1
       }
