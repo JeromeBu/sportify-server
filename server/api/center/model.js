@@ -9,8 +9,7 @@ const schema = new mongoose.Schema({
     uniqueCaseInsensitive: true
   },
   phone: {
-    type: String,
-    unique: true
+    type: String
   },
   address: {
     type: String,

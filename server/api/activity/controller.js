@@ -37,6 +37,8 @@ exports.index = (req, res, next) => {
         as: 'sessions_docs' // renvoie dans un array sessions_docs
       }
     },
+    { $unwind: '$centers' },
+
     {
       $match: { 'sessions_docs.startsAt': { $gte: today } } // on ne veut que des sessions actuelles
     },
@@ -65,7 +67,7 @@ exports.index = (req, res, next) => {
     { $sort: { sessions: 1 } }
   ])
     .then(activities => {
-      //console.log(chalk.green('ACTIVITIES'), activities)
+      // console.log(chalk.green('ACTIVITIES'), activities)
       if (!activities)
         return res.status(404).json({
           error: 'Activities not found'
