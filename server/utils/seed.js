@@ -69,8 +69,8 @@ const seed = async () => {
         } - ${center.name}`
       )
     }
-    const min = i * 10
-    const max = (i + 1) * 10
+    const min = (i + 1) * 10
+    const max = (i + 2) * 10
     await Activity.find({ shortId: { $gt: min, $lt: max } }).exec(
       (err, activ) => {
         center.activities = activ
@@ -101,8 +101,8 @@ const seed = async () => {
       )
     }
 
-    const min = i * 10
-    const max = (i + 1) * 10
+    const min = (i + 1) * 10
+    const max = (i + 2) * 10
     await Session.find({ shortId: { $gt: min, $lt: max } }).exec(
       (err, sess) => {
         activity.sessions = sess

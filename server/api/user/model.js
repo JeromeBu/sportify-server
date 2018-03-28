@@ -60,6 +60,9 @@ const UserSchema = new mongoose.Schema({
       type: Date,
       required: true,
       default: '01/01/1980'
+    },
+    image: {
+      type: String
     }
   }
 })

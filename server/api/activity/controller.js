@@ -1,55 +1,70 @@
+const Center = require('../center/model')
 const Activity = require('./model')
 const mongoose = require('mongoose')
 const chalk = require('chalk')
 
 exports.index = (req, res, next) => {
   const today = new Date()
+  const long = isNaN(req.query.long) ? 0 : parseFloat(req.query.long)
+  const lat = isNaN(req.query.lat) ? 0 : parseFloat(req.query.lat)
 
-  Activity.aggregate([
-    // Then join
+  Center.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [long, lat]
+        },
+        distanceField: 'distance',
+        spherical: true
+      }
+    },
+    {
+      $lookup: {
+        from: 'activities', // the model
+        localField: 'activities', // the nested object
+        foreignField: '_id', // le match
+        as: 'activities_docs' // renvoie dans un array sessions_docs
+      }
+    },
+    { $unwind: '$activities_docs' },
+    { $unwind: '$activities_docs.sessions' },
     {
       $lookup: {
         from: 'sessions', // the model
-        localField: 'sessions', // the nested object
+        localField: 'activities_docs.sessions', // the nested object
         foreignField: '_id', // le match
         as: 'sessions_docs' // renvoie dans un array sessions_docs
-      }
-    },
-
-    {
-      $lookup: {
-        from: 'centers', // the model
-        localField: 'center', // the nested object
-        foreignField: '_id', // le match
-        as: 'centers' // renvoie dans un array sessions_docs
       }
     },
     { $unwind: '$centers' },
 
     {
-      $project: {
-        name: 1,
-        image: 1,
-        distance: 1,
-        centers: 1,
-        sessions_docs: 1
-      }
-    },
-    { $unwind: '$sessions_docs' },
-    {
       $match: { 'sessions_docs.startsAt': { $gte: today } } // on ne veut que des sessions actuelles
     },
     { $sort: { 'sessions_docs.startsAt': 1 } },
+    { $unwind: '$sessions_docs' },
+    {
+      $project: {
+        _id: '$activities_docs._id',
+        name: '$activities_docs.name',
+        image: '$activities_docs.image',
+        distance: '$distance',
+        center: '$name',
+        sessions: '$sessions_docs.startsAt'
+      }
+    },
     {
       $group: {
         _id: '$_id',
         name: { $first: '$name' },
         image: { $first: '$image' },
         distance: { $first: '$distance' },
-        center: { $first: '$centers.name' },
-        sessions: { $first: '$sessions_docs.startsAt' }
+        center: { $first: '$center' },
+        sessions: { $first: '$sessions' }
       }
-    }
+    },
+    { $sort: { sessions: 1 } }
   ])
     .then(activities => {
       // console.log(chalk.green('ACTIVITIES'), activities)
