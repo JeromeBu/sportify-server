@@ -1,67 +1,71 @@
+const Center = require('../center/model')
 const Activity = require('./model')
 const mongoose = require('mongoose')
 const chalk = require('chalk')
 
 exports.index = (req, res, next) => {
   const today = new Date()
+  const long = isNaN(req.query.long) ? 0 : parseFloat(req.query.long)
+  const lat = isNaN(req.query.lat) ? 0 : parseFloat(req.query.lat)
 
-  Activity.aggregate([
-    // Filter first
+  Center.aggregate([
     {
       $geoNear: {
         near: {
           type: 'Point',
-          coordinates: [parseFloat(req.query.long), parseFloat(req.query.lat)]
+          coordinates: [long, lat]
         },
         distanceField: 'distance',
         spherical: true
       }
     },
-    // Then join
+    {
+      $lookup: {
+        from: 'activities', // the model
+        localField: 'activities', // the nested object
+        foreignField: '_id', // le match
+        as: 'activities_docs' // renvoie dans un array sessions_docs
+      }
+    },
+    { $unwind: '$activities_docs' },
+    { $unwind: '$activities_docs.sessions' },
     {
       $lookup: {
         from: 'sessions', // the model
-        localField: 'sessions', // the nested object
+        localField: 'activities_docs.sessions', // the nested object
         foreignField: '_id', // le match
         as: 'sessions_docs' // renvoie dans un array sessions_docs
       }
     },
     {
-      $lookup: {
-        from: 'centers', // the model
-        localField: 'center', // the nested object
-        foreignField: '_id', // le match
-        as: 'centers_docs' // renvoie dans un array sessions_docs
-      }
-    },
-    {
-      $project: {
-        name: 1,
-        image: 1,
-        distance: 1,
-        centers_docs: 1,
-        sessions_docs: 1
-      }
-    },
-    { $unwind: '$sessions_docs' },
-    {
       $match: { 'sessions_docs.startsAt': { $gte: today } } // on ne veut que des sessions actuelles
     },
-    { $unwind: '$centers_docs' },
     { $sort: { 'sessions_docs.startsAt': 1 } },
+    { $unwind: '$sessions_docs' },
+    {
+      $project: {
+        _id: '$activities_docs._id',
+        name: '$activities_docs.name',
+        image: '$activities_docs.image',
+        distance: '$distance',
+        center: '$name',
+        sessions: '$sessions_docs.startsAt'
+      }
+    },
     {
       $group: {
         _id: '$_id',
         name: { $first: '$name' },
         image: { $first: '$image' },
         distance: { $first: '$distance' },
-        center: { $first: '$centers_docs.name' },
-        sessions: { $first: '$sessions_docs.startsAt' }
+        center: { $first: '$center' },
+        sessions: { $first: '$sessions' }
       }
-    }
+    },
+    { $sort: { sessions: 1 } }
   ])
     .then(activities => {
-      // console.log(chalk.green('ACTIVITIES'), activities)
+      //console.log(chalk.green('ACTIVITIES'), activities)
       if (!activities)
         return res.status(404).json({
           error: 'Activities not found'

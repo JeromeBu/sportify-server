@@ -1,31 +1,27 @@
 [
   {
     "name": "Yoga",
-    "image": "https://greatist.com/sites/default/files/YogaLingo.jpg",
-    "loc": [2.333333, 48.866667]
+    "image":
+      "https://res.cloudinary.com/images-9jht54e/image/upload/v1522242253/sportify/yoga.jpg"
   },
   {
     "name": "TRX",
     "image":
-      "https://www.esdo.fr/wp-content/uploads/2016/12/banniere_trx_suspension_training.jpg",
-    "loc": [2.333333, 48.866667]
+      "https://res.cloudinary.com/images-9jht54e/image/upload/v1522242253/sportify/trx.jpg"
   },
   {
     "name": "Cardio",
     "image":
-      "https://cdn-maf0.heartyhosting.com/sites/muscleandfitness.com/files/styles/full_node_image_1090x614/public/cardio-treadmill_1.jpg?itok=LTsMm6jA",
-    "loc": [2.333333, 48.866667]
+      "https://res.cloudinary.com/images-9jht54e/image/upload/v1522242253/sportify/cardio.jpg"
   },
   {
     "name": "Crossfit",
     "image":
-      "https://www.shape.com/sites/shape.com/files/fb-crossfit-injuries.jpg",
-    "loc": [2.333333, 48.866667]
+      "https://res.cloudinary.com/images-9jht54e/image/upload/v1522242253/sportify/crossfit.jpg"
   },
   {
     "name": "Musculation",
     "image":
-      "https://claudiafittricksblog.files.wordpress.com/2017/04/peso_musculacao.jpg?w=640",
-    "loc": [2.333333, 48.866667]
+      "https://res.cloudinary.com/images-9jht54e/image/upload/v1522242254/sportify/musculation.jpg"
   }
 ]
