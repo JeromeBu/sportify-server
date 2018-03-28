@@ -76,7 +76,8 @@ function createUser(options = {}, callback) {
         gender:
           options.gender || ['Male', 'Female'][Math.floor(Math.random() * 2)],
         role: options.role || 'user',
-        paidUntil: options.paidUntil || randomDate(new Date(), inTwoWeeks)
+        paidUntil: options.paidUntil || randomDate(new Date(), inTwoWeeks),
+        image: options.image
       }
     })
     User.register(newUser, password, (err, user) => {
@@ -102,7 +103,8 @@ function createCenter(options = {}) {
       shortId: options.shortId,
       name: options.name || randomFromTable(centers),
       address: options.address || faker.address.streetAddress(),
-      activities: options.activities || []
+      activities: options.activities || [],
+      loc: options.loc || []
     })
     center.save(err => {
       if (err) {

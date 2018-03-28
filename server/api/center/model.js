@@ -17,7 +17,11 @@ const schema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Activity'
     }
-  ]
+  ],
+  loc: {
+    type: [Number],
+    index: '2dsphere'
+  }
 })
 
 module.exports = mongoose.model('Center', schema)

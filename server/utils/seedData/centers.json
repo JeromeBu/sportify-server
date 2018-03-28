@@ -1,11 +1,14 @@
 [
   {
-    "name": "Belleville - Ménilmontant"
+    "name": "Belleville - Ménilmontant",
+    "loc": [2.380155, 48.869274]
   },
   {
-    "name": "Place D'Italie"
+    "name": "Place D'Italie",
+    "loc": [2.354525, 48.830934]
   },
   {
-    "name": "Denfert - Alésia"
+    "name": "Beaugrenelle",
+    "loc": [2.284117, 48.849316]
   }
 ]

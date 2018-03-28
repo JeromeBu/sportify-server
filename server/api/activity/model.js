@@ -19,11 +19,6 @@ const schema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Center',
     required: [true, 'center is required']
-  },
-  loc: {
-    type: [Number],
-    index: '2dsphere',
-    default: [2.333333, 48.866667]
   }
 })
 
