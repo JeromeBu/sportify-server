@@ -102,6 +102,7 @@ function createCenter(options = {}) {
     const center = new Center({
       shortId: options.shortId,
       name: options.name || randomFromTable(centers),
+      phone: options.phone || faker.phone.phoneNumber(),
       address: options.address || faker.address.streetAddress(),
       activities: options.activities || [],
       loc: options.loc || []

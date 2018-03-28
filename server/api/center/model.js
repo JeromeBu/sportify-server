@@ -8,6 +8,10 @@ const schema = new mongoose.Schema({
     unique: true,
     uniqueCaseInsensitive: true
   },
+  phone: {
+    type: String,
+    unique: true
+  },
   address: {
     type: String,
     required: [true, 'address is required']
