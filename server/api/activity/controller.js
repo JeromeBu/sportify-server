@@ -37,8 +37,6 @@ exports.index = (req, res, next) => {
         as: 'sessions_docs' // renvoie dans un array sessions_docs
       }
     },
-    { $unwind: '$centers' },
-
     {
       $match: { 'sessions_docs.startsAt': { $gte: today } } // on ne veut que des sessions actuelles
     },
