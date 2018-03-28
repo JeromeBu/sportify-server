@@ -65,7 +65,7 @@ exports.index = (req, res, next) => {
     { $sort: { sessions: 1 } }
   ])
     .then(activities => {
-      console.log(chalk.green('ACTIVITIES'), activities)
+      //console.log(chalk.green('ACTIVITIES'), activities)
       if (!activities)
         return res.status(404).json({
           error: 'Activities not found'
