@@ -9,19 +9,21 @@ const schema = new mongoose.Schema({
     uniqueCaseInsensitive: true
   },
   phone: {
-    type: String,
-    unique: true
+    type: String
   },
   address: {
     type: String,
     required: [true, 'address is required']
   },
-  activities: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Activity'
-    }
-  ]
+  loc: {
+    type: [Number],
+    index: '2dsphere',
+    default: [2.333333, 48.866667]
+  },
+  activities: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Activity'
+  }]
 })
 
 module.exports = mongoose.model('Center', schema)

@@ -6,17 +6,6 @@ exports.index = (req, res, next) => {
   const today = new Date()
 
   Activity.aggregate([
-    // Filter first
-    {
-      $geoNear: {
-        near: {
-          type: 'Point',
-          coordinates: [parseFloat(req.query.long), parseFloat(req.query.lat)]
-        },
-        distanceField: 'distance',
-        spherical: true
-      }
-    },
     // Then join
     {
       $lookup: {
@@ -26,20 +15,23 @@ exports.index = (req, res, next) => {
         as: 'sessions_docs' // renvoie dans un array sessions_docs
       }
     },
+
     {
       $lookup: {
         from: 'centers', // the model
         localField: 'center', // the nested object
         foreignField: '_id', // le match
-        as: 'centers_docs' // renvoie dans un array sessions_docs
+        as: 'centers' // renvoie dans un array sessions_docs
       }
     },
+    { $unwind: '$centers' },
+
     {
       $project: {
         name: 1,
         image: 1,
         distance: 1,
-        centers_docs: 1,
+        centers: 1,
         sessions_docs: 1
       }
     },
@@ -47,7 +39,6 @@ exports.index = (req, res, next) => {
     {
       $match: { 'sessions_docs.startsAt': { $gte: today } } // on ne veut que des sessions actuelles
     },
-    { $unwind: '$centers_docs' },
     { $sort: { 'sessions_docs.startsAt': 1 } },
     {
       $group: {
@@ -55,7 +46,7 @@ exports.index = (req, res, next) => {
         name: { $first: '$name' },
         image: { $first: '$image' },
         distance: { $first: '$distance' },
-        center: { $first: '$centers_docs.name' },
+        center: { $first: '$centers.name' },
         sessions: { $first: '$sessions_docs.startsAt' }
       }
     }
