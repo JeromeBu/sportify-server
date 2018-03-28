@@ -19,7 +19,6 @@ exports.index = (req, res, next) => {
 
 exports.getTeacherSessions = (req, res, next) => {
   const { id } = req.params
-  console.log('id', id)
 
   Session.findById({ _id: id })
     .populate({
@@ -94,7 +93,6 @@ exports.bookSession = (req, res, next) => {
 exports.peoplePresent = (req, res, next) => {
   const { id } = req.params
   const { userId } = req.body
-  console.log('USERID', userId)
 
   Session.findByIdAndUpdate(
     { _id: id },
@@ -120,7 +118,6 @@ exports.peoplePresent = (req, res, next) => {
       select: 'account.firstName account.lastName account.image'
     })
     .then(session => {
-      console.log('SESSION', session)
       res.json({ session })
     })
     .catch(err => {
