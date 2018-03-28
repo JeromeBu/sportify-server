@@ -94,13 +94,33 @@ exports.bookSession = (req, res, next) => {
 exports.peoplePresent = (req, res, next) => {
   const { id } = req.params
   const { userId } = req.body
+  console.log('USERID', userId)
 
   Session.findByIdAndUpdate(
     { _id: id },
     { $push: { peoplePresent: userId }, $pull: { bookedBy: userId } },
     { new: true }
   )
+    .populate({
+      path: 'activity',
+      select: 'image name',
+      populate: [
+        {
+          path: 'center',
+          select: 'address name'
+        }
+      ]
+    })
+    .populate({
+      path: 'bookedBy',
+      select: 'account.firstName account.lastName account.image'
+    })
+    .populate({
+      path: 'peoplePresent',
+      select: 'account.firstName account.lastName account.image'
+    })
     .then(session => {
+      console.log('SESSION', session)
       res.json({ session })
     })
     .catch(err => {
