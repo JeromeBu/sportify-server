@@ -34,11 +34,11 @@ exports.getTeacherSessions = (req, res, next) => {
     })
     .populate({
       path: 'bookedBy',
-      select: 'account.firstName account.lastName'
+      select: 'account.firstName account.lastName account.image'
     })
     .populate({
       path: 'peoplePresent',
-      select: 'account.firstName account.lastName'
+      select: 'account.firstName account.lastName account.image'
     })
     .then(session => {
       if (!session) return res.status(404).json({ error: 'Session not found' })

@@ -61,7 +61,8 @@ exports.index = (req, res, next) => {
         center: { $first: '$center' },
         sessions: { $first: '$sessions' }
       }
-    }
+    },
+    { $sort: { sessions: 1 } }
   ])
     .then(activities => {
       console.log(chalk.green('ACTIVITIES'), activities)
