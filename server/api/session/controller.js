@@ -19,7 +19,6 @@ exports.index = (req, res, next) => {
 
 exports.getTeacherSessions = (req, res, next) => {
   const { id } = req.params
-  console.log('id', id)
 
   Session.findById({ _id: id })
     .populate({
@@ -100,6 +99,24 @@ exports.peoplePresent = (req, res, next) => {
     { $push: { peoplePresent: userId }, $pull: { bookedBy: userId } },
     { new: true }
   )
+    .populate({
+      path: 'activity',
+      select: 'image name',
+      populate: [
+        {
+          path: 'center',
+          select: 'address name'
+        }
+      ]
+    })
+    .populate({
+      path: 'bookedBy',
+      select: 'account.firstName account.lastName account.image'
+    })
+    .populate({
+      path: 'peoplePresent',
+      select: 'account.firstName account.lastName account.image'
+    })
     .then(session => {
       res.json({ session })
     })
